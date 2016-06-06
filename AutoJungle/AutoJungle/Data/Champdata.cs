@@ -25,7 +25,7 @@ namespace AutoJungle
             {
                 case "MasterYi":
                     Hero = ObjectManager.Player;
-                    Type = BuildType.NOC;
+                    Type = BuildType.YI;
 
                     Q = new Spell(SpellSlot.Q, 600);
                     Q.SetTargetted(0.5f, float.MaxValue);
