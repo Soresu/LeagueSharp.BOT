@@ -38,6 +38,9 @@ namespace AutoJungle.Data
                 case BuildType.Manwang:
                     SetlistManwang();
                     break;
+                case BuildType.YI:
+                    SetlistYI();
+                    break;
             }
         }
 
@@ -211,6 +214,31 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(20, 2138, "Elixir of Iron", 500));
         }
 
+        private void SetlistYI()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
+            ItemList.Add(new BuyingOrder(7, (int) ItemId.Recurve_Bow, "弓", 700));
+            ItemList.Add(new BuyingOrder(8, 1416, "Bloodrazor", 625));
+            ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
+            ItemList.Add(new BuyingOrder(10, 3117, "BoM", 600));
+            ItemList.Add(new BuyingOrder(11, (int) ItemId.Tiamat_Melee_Only, "Tiamat", 1250));
+            ItemList.Add(new BuyingOrder(12, (int) ItemId.Vampiric_Scepter, "Vampiric_Screpter", 900));
+            ItemList.Add(new BuyingOrder(13, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 1450));
+            ItemList.Add(new BuyingOrder(14, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
+            ItemList.Add(new BuyingOrder(15, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
+            ItemList.Add(new BuyingOrder(16, 1037, "十字", 875));
+            ItemList.Add(new BuyingOrder(17, 3133, "warhamm", 1100));
+            ItemList.Add(new BuyingOrder(18, 3812, "dance", 1525));
+            ItemList.Add(new BuyingOrder(19, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
+            ItemList.Add(new BuyingOrder(20, 3742, "Dead Mans Plate", 2600));
+            ItemList.Add(new BuyingOrder(21, 2410, "Elixir of Wrath", 500));
+        }
+
         public static void UseItemsJungle()
         {
             if (Items.HasItem((int) ItemId.Tiamat_Melee_Only) && Items.CanUseItem((int) ItemId.Tiamat_Melee_Only) &&
@@ -300,6 +328,7 @@ namespace AutoJungle.Data
         EVE,
         APADT,
         VB,
-        Manwang
+        Manwang,
+        YI
     }
 }
