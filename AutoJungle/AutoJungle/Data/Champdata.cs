@@ -3,8 +3,6 @@ using System.Linq;
 using AutoJungle.Data;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
-using UnderratedAIO.Helpers;
 
 namespace AutoJungle
 {
@@ -129,7 +127,7 @@ namespace AutoJungle
                     Console.WriteLine("Xin Zhao loaded");
                     break;
 
-                    case "Nocturne":
+                case "Nocturne":
                     Hero = ObjectManager.Player;
                     Type = BuildType.NOC;
 
@@ -148,7 +146,7 @@ namespace AutoJungle
                     Console.WriteLine("Nocturne loaded");
                     break;
 
-                    case "Evelynn":
+                case "Evelynn":
                     Hero = ObjectManager.Player;
                     Type = BuildType.EVE;
 
@@ -156,7 +154,9 @@ namespace AutoJungle
                     W = new Spell(SpellSlot.W);
                     E = new Spell(SpellSlot.E, 225);
                     R = new Spell(SpellSlot.R, 650);
-                    R.SetSkillshot(R.Instance.SData.SpellCastTime, R.Instance.SData.LineWidth, R.Speed, false, SkillshotType.SkillshotCone);
+                    R.SetSkillshot(
+                        R.Instance.SData.SpellCastTime, R.Instance.SData.LineWidth, R.Speed, false,
+                        SkillshotType.SkillshotCone);
 
                     Autolvl = new AutoLeveler(new int[] { 0, 2, 1, 0, 0, 3, 0, 2, 0, 2, 3, 2, 2, 1, 1, 3, 1, 1 });
 
@@ -165,7 +165,7 @@ namespace AutoJungle
                     Console.WriteLine("Evelynn loaded");
                     break;
 
-                    case "Volibear":
+                case "Volibear":
                     Hero = ObjectManager.Player;
                     Type = BuildType.VB;
 
@@ -181,7 +181,7 @@ namespace AutoJungle
                     Console.WriteLine("Volibear loaded");
                     break;
 
-                    case "Tryndamere":
+                case "Tryndamere":
                     Hero = ObjectManager.Player;
                     Type = BuildType.Manwang;
 
@@ -196,10 +196,10 @@ namespace AutoJungle
                     Combo = MWCombo;
                     Console.WriteLine("Tryndamere loaded");
                     break;
-                	default:
+                default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
-//nidale w buff?(优先）)nunu R check | sej，结束skr，amumu？ graves！
+                //nidale w buff?(优先）)nunu R check | sej，结束skr，amumu？ graves！
             }
         }
 
@@ -217,7 +217,7 @@ namespace AutoJungle
             if (Hero.IsWindingUp)
             {
                 return false;
-            }       
+            }
             if (E.IsReady() && targetHero.IsValidTarget(600))
             {
                 E.Cast(targetHero);
@@ -227,21 +227,21 @@ namespace AutoJungle
             {
                 W.Cast();
             }
-			if (Q.IsReady() && !Hero.HasBuff("UndyingRage") && Hero.HealthPercent < 20)
-			{
-				Q.Cast();
-			}
+            if (Q.IsReady() && !Hero.HasBuff("UndyingRage") && Hero.HealthPercent < 20)
+            {
+                Q.Cast();
+            }
             if (R.IsReady() && Hero.HealthPercent < 15 && targetHero.CountEnemiesInRange(700) >= 1)
             {
                 R.Cast();
-            }             
+            }
             Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
             return false;
         }
 
         private bool MWJungleClear()
         {
-        	var targetMob = Program._GameInfo.Target;
+            var targetMob = Program._GameInfo.Target;
             var structure = Helpers.CheckStructure();
             if (structure != null)
             {
@@ -307,7 +307,7 @@ namespace AutoJungle
 
         private bool VbJungleClear()
         {
-        	var targetMob = Program._GameInfo.Target;
+            var targetMob = Program._GameInfo.Target;
             var structure = Helpers.CheckStructure();
             if (structure != null)
             {
@@ -390,11 +390,11 @@ namespace AutoJungle
             }
             ItemHandler.UseItemsJungle();
             if (Q.IsReady() && Hero.Distance(targetMob) < Q.Range &&
-            (Helpers.getMobs(Hero.Position, Q.Range).Count >= 2 || targetMob.MaxHealth>700))
+                (Helpers.getMobs(Hero.Position, Q.Range).Count >= 2 || targetMob.MaxHealth > 700))
             {
                 Q.Cast(targetMob);
             }
-            if (E.IsReady() && E.CanCast(targetMob) && (Hero.ManaPercent > 60 || targetMob.MaxHealth>700))
+            if (E.IsReady() && E.CanCast(targetMob) && (Hero.ManaPercent > 60 || targetMob.MaxHealth > 700))
             {
                 E.CastOnUnit(targetMob);
             }
@@ -918,7 +918,8 @@ namespace AutoJungle
                 E.CastOnUnit(targetHero);
             }
             Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
-            return false;        }
+            return false;
+        }
 
         private bool NocturneJungleClear()
         {

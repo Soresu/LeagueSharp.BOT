@@ -1,6 +1,6 @@
 ﻿using LeagueSharp.Common;
 
-namespace UnderratedAIO.Helpers
+namespace AutoJungle.Data
 {
     internal class AutoLeveler
     {

@@ -5,10 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using AutoJungle.Data;
+using System.IO;
 using LeagueSharp;
+using System.Text;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
+using System.Globalization;
+using System.Resources;
 
 namespace AutoJungle
 {
@@ -27,6 +31,12 @@ namespace AutoJungle
         public static ItemHandler ItemHandler;
 
         public static Vector3 pos;
+
+        public static ResourceManager resourceM;
+        public static CultureInfo culture;
+        public static String[] languages = new String[] { "English", "Chinese" };
+        public static String[] languagesShort = new String[] { "en", "cn" };
+        public static string fileName, path;
 
         #region Main
 
@@ -330,11 +340,7 @@ namespace AutoJungle
             {
                 Items.UseItem(2031);
             }
-            if (Items.HasItem(2032) && Items.CanUseItem(2032) && player.HealthPercent < 80 &&
-                !player.Buffs.Any(b => b.Name.Equals("ItemCrystalFlask")))
-            {
-                Items.UseItem(2032);
-            }        }
+        }
 
         private static void MoveToPos()
         {
@@ -412,11 +418,7 @@ namespace AutoJungle
                     {
                         player.SellItem(player.InventoryItems.First(i => i.Id == (ItemId) 2031).Slot);
                     }
-                    player.BuyItem((ItemId) itemToBuy.ItemId);
-                    if (itemToBuy.Index > 9 && Items.HasItem(2032))
-                    {
-                        player.SellItem(player.InventoryItems.First(i => i.Id == (ItemId) 2032).Slot);
-                    }                    var nextItem = orderedList.FirstOrDefault(i => i.Index == itemToBuy.Index + 1);
+                    var nextItem = orderedList.FirstOrDefault(i => i.Index == itemToBuy.Index + 1);
                     if (nextItem != null)
                     {
                         _GameInfo.NextItemPrice = nextItem.Price;
@@ -517,30 +519,6 @@ namespace AutoJungle
                         return mob;
                     }
                     break;
-                    //pushing2 攻击敌方英雄+塔，没有的话进行laneclear
-                case State.Pushing2:
-                    var enemy1 = Helpers.GetTargetEnemy();
-                    if (enemy1 != null)
-                    {
-                        _GameInfo.Target = enemy;
-                        _GameInfo.Champdata.Combo();
-                        return enemy1;
-                    }
-                    var enemyTurret =
-                        ObjectManager.Get<Obj_AI_Turret>()
-                            .FirstOrDefault(
-                                t =>
-                                    t.IsEnemy && !t.IsDead && t.Distance(player) < 2000 &&
-                                    Helpers.getAllyMobs(t.Position, 500).Count > 0);
-                    if (enemyTurret != null)
-                    {
-                        Helpers.getMobs(player.Position, GameInfo.ChampionRange)
-                        .Where(m => !m.UnderTurret(true))
-                        .OrderByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
-                        .ThenBy(m => m.Distance(player))
-                        .FirstOrDefault();
-                    }   
-                    break;                 
                 case State.Defending:
                     var enemyDef = Helpers.GetTargetEnemy();
                     if (enemyDef != null && !_GameInfo.InDanger)
@@ -602,134 +580,6 @@ namespace AutoJungle
             return false;
         }
 
-        private static bool Pushing2()
-        {
-            if (player.Level >= menu.item("tuixianlv").GetValue<Slider>().Value &&
-                ((player.Mana > _GameInfo.Champdata.R.ManaCost && player.MaxMana > 100) || player.MaxMana <= 100))
-                {
-                continue;
-                }
-            //Checknig enemy turrets
-            foreach (var vector in
-                _GameInfo.EnemyStructures.Where(
-                    s =>
-                        s.Distance(player.Position) < menu.Item("GankRange").GetValue<Slider>().Value &&
-                        CheckLaneClear(s)))
-            {
-                var aMinis = Helpers.getAllyMobs(vector, GameInfo.ChampionRange);
-                if (aMinis.Count > 1)
-                {
-                    var eMinis =
-                        Helpers.getMobs(vector, GameInfo.ChampionRange)
-                            .OrderByDescending(m => Helpers.getMobs(m.Position, 300).Count)
-                            .FirstOrDefault();
-                    if (eMinis != null)
-                    {
-                        var pos = eMinis.Position;
-                        if (Helpers.CheckPath(player.GetPath(pos)) && !CheckForRetreat(null, pos))
-                        {
-                            _GameInfo.MoveTo = pos;
-                            if (Debug)
-                            {
-                                Console.WriteLine("CheckForGrouping() - Checknig enemy turrets 1");
-                            }
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        if (Helpers.CheckPath(player.GetPath(vector)) && !CheckForRetreat(null, vector))
-                        {
-                            _GameInfo.MoveTo = vector;
-                            if (Debug)
-                            {
-                                Console.WriteLine("CheckForGrouping() - Checknig enemy turrets 2");
-                            }
-                            return true;
-                        }
-                    }
-                }
-            }
-            //Checknig ally turrets
-            foreach (var vector in
-                _GameInfo.AllyStructures.Where(
-                    s => s.Distance(player.Position) < menu.Item("GankRange").GetValue<Slider>().Value))
-            {
-                var eMinis = Helpers.getMobs(vector, GameInfo.ChampionRange);
-                if (!CheckLaneClear(vector))
-                {
-                    continue;
-                }
-                if (eMinis.Count > 3)
-                {
-                    var temp = eMinis.OrderByDescending(m => Helpers.getMobs(m.Position, 300).Count).FirstOrDefault();
-                    if (temp != null)
-                    {
-                        var pos = temp.Position;
-                        if (Helpers.CheckPath(player.GetPath(pos)) && !CheckForRetreat(null, pos))
-                        {
-                            _GameInfo.MoveTo = pos;
-                            if (Debug)
-                            {
-                                Console.WriteLine("CheckForGrouping() - Checknig ally turrets 1");
-                            }
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        if (Helpers.CheckPath(player.GetPath(vector)) && !CheckForRetreat(null, vector))
-                        {
-                            _GameInfo.MoveTo = vector;
-                            if (Debug)
-                            {
-                                Console.WriteLine("CheckForGrouping() - Checknig ally turrets 2");
-                            }
-                            return true;
-                        }
-                    }
-                }
-            }
-            //follow minis
-            var minis = Helpers.getAllyMobs(player.Position, 1000);
-            if (minis.Count >= 5 && player.Level >= 15)
-            {
-                var objAiBase = minis.OrderBy(m => m.Distance(_GameInfo.SpawnPointEnemy)).FirstOrDefault();
-                if (objAiBase != null &&
-                    (objAiBase.CountAlliesInRange(GameInfo.ChampionRange) == 0 ||
-                     objAiBase.CountAlliesInRange(GameInfo.ChampionRange) >= 2 || player.Level >= 15) &&
-                    Helpers.getMobs(objAiBase.Position, 1000).Count == 0)
-                {
-                    _GameInfo.MoveTo = objAiBase.Position.Extend(_GameInfo.SpawnPoint, 100);
-                    _GameInfo.GroupWithoutTarget = true;
-                    if (Debug)
-                    {
-                        Console.WriteLine("CheckForGrouping() - follow minis");
-                    }
-                    return true;
-                }
-            }
-            //Checking ally mobs, pushing
-            if (player.Level > 15)
-            {
-                var miniwave =
-                    ObjectManager.Get<Obj_AI_Minion>()
-                        .Where(
-                            m =>
-                                m.Distance(_GameInfo.SpawnPointEnemy) < 7000 &&
-                                Helpers.getAllyMobs(m.Position, 1200).Count >= 7)
-                        .OrderByDescending(m => m.Distance(_GameInfo.SpawnPointEnemy) < 7000)
-                        .ThenBy(m => m.Distance(player))
-                        .FirstOrDefault();
-                if (miniwave != null && Helpers.CheckPath(player.GetPath(miniwave.Position)) &&
-                    !CheckForRetreat(null, miniwave.Position) && CheckLaneClear(miniwave.Position))
-                {
-                    _GameInfo.MoveTo = miniwave.Position.Extend(player.Position, 200);
-                    return true;
-                }
-            }
-            return false;
-        }
         private static bool CheckGanking()
         {
             Obj_AI_Hero gankTarget = null;
@@ -839,12 +689,6 @@ namespace AutoJungle
                         tempstate = State.Pushing;
                     }
                 }
-                //pushing2
-                if (tempstate == State.Null && player.Level >= 15 && CheckForPushing2())
-                {
-                    tempstate == State.Pushing2;
-                }
-
                 if (tempstate == State.Null &&
                     (_GameInfo.MoveTo.Distance(player.Position) > GameInfo.ChampionRange || _GameInfo.GroupWithoutTarget) &&
                     (_GameInfo.GameState == State.Positioning || _GameInfo.GameState == State.Grouping))
@@ -1412,6 +1256,21 @@ namespace AutoJungle
             }
         }
 
+        private static void OnValueChanged(object sender, OnValueChangeEventArgs onValueChangeEventArgs)
+        {
+            try
+            {
+                Console.WriteLine("wtf");
+                var index = languages.ToList().IndexOf(onValueChangeEventArgs.GetNewValue<StringList>().SelectedValue);
+                File.WriteAllText(path + fileName, languagesShort[index], Encoding.Default);
+                Console.WriteLine("Changed to " + languagesShort[index]);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
         #endregion
 
         #region Init
@@ -1423,17 +1282,16 @@ namespace AutoJungle
 
         private static void OnGameLoad(EventArgs args)
         {
+            SetCulture();
             if (Game.MapId != GameMapId.SummonersRift)
             {
-                Game.PrintChat("The map is not supported!");
-                Game.PrintChat("Di Tu Bu Zhi Chi!");
+                Game.PrintChat(resourceM.GetString("MapNotSupported"));
                 return;
             }
             _GameInfo.Champdata = new Champdata();
             if (_GameInfo.Champdata.Hero == null)
             {
-                Game.PrintChat("The champion is not supported!");
-                Game.PrintChat("Bu Zhi Chi Ci Ying Xiong!");
+                Game.PrintChat(resourceM.GetString("ChampNotSupported"));
                 return;
             }
             Jungle.setSmiteSlot();
@@ -1444,8 +1302,7 @@ namespace AutoJungle
                 {
                     Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
                 }
-                Game.PrintChat("You don't have smite!");
-                Game.PrintChat("Ni mei you Cheng Jie/Zhong Ji!");
+                Game.PrintChat(resourceM.GetString("NoSmite"));
                 return;
             }
 
@@ -1458,6 +1315,37 @@ namespace AutoJungle
             Obj_AI_Base.OnNewPath += Obj_AI_Base_OnNewPath;
             Game.OnEnd += Game_OnEnd;
             Obj_AI_Base.OnDelete += Obj_AI_Base_OnDelete;
+        }
+
+        private static void SetCulture()
+        {
+            try
+            {
+                path = string.Format(@"{0}\AutoJ\", Config.AppDataDirectory);
+                fileName = "Lang.txt";
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                if (!File.Exists(path + fileName))
+                {
+                    File.AppendAllText(path + fileName, "en", Encoding.Default);
+                    resourceM = new ResourceManager("AutoJungle.Resource.en", typeof(Program).Assembly);
+                    Console.WriteLine("First start, lang is English");
+                }
+                else
+                {
+                    var cultureString = File.ReadLines(path + fileName).First();
+                    Console.WriteLine(cultureString);
+                    resourceM = new ResourceManager("AutoJungle.Resource." + cultureString, typeof(Program).Assembly);
+                    Console.WriteLine("Lang set to " + cultureString);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                resourceM = new ResourceManager("AutoJungle.Resource.en", typeof(Program).Assembly);
+            }
         }
 
         private static void Obj_AI_Base_OnDelete(GameObject sender, EventArgs args)
@@ -1488,48 +1376,65 @@ namespace AutoJungle
 
         private static void CreateMenu()
         {
-            menu = new Menu("S7-AutoJungle", "AutoJungle", true);
+            menu = new Menu(resourceM.GetString("AutoJungle"), "AutoJungle", true);
 
-            Menu menuD = new Menu("Debug ", "dsettings");
-            menuD.AddItem(new MenuItem("debug", "Print to console"))
+            Menu menuD = new Menu(resourceM.GetString("dsettings"), "dsettings");
+            menuD.AddItem(new MenuItem("debug", resourceM.GetString("debug")))
                 .SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press))
                 .SetFontStyle(FontStyle.Bold, SharpDX.Color.Orange);
-            menuD.AddItem(new MenuItem("State", "Show GameState")).SetValue(false);
+            menuD.AddItem(new MenuItem("State", resourceM.GetString("State"))).SetValue(false);
             menu.AddSubMenu(menuD);
-            Menu menuJ = new Menu("Jungle settings", "jsettings");
-            menuJ.AddItem(new MenuItem("HealtToBack", "Recall on HP(%)").SetValue(new Slider(35, 0, 100)));
-            menuJ.AddItem(new MenuItem("UseTrinket", "Use Trinket")).SetValue(true);
-            menuJ.AddItem(new MenuItem("EnemyJungle", "Go into enemy jungle")).SetValue(true);
+            Menu menuJ = new Menu(resourceM.GetString("jsettings"), "jsettings");
+            menuJ.AddItem(
+                new MenuItem("HealtToBack", resourceM.GetString("HealtToBack")).SetValue(new Slider(35, 0, 100)));
+            menuJ.AddItem(new MenuItem("UseTrinket", resourceM.GetString("UseTrinket"))).SetValue(true);
+            menuJ.AddItem(new MenuItem("EnemyJungle", resourceM.GetString("EnemyJungle"))).SetValue(true);
             menu.AddSubMenu(menuJ);
-            Menu menuG = new Menu("Gank settings", "gsettings");
-            menuG.AddItem(new MenuItem("GankLevel", "Min level to gank").SetValue(new Slider(5, 1, 18)));
-            menuG.AddItem(new MenuItem("GankFrequency", "Ganking frequency").SetValue(new Slider(100, 0, 100)));
-            menuG.AddItem(new MenuItem("GankRange", "Searching range").SetValue(new Slider(7000, 0, 20000)));
-            menuG.AddItem(new MenuItem("ComboSmite", "Use Smite")).SetValue(true);
+            Menu menuG = new Menu(resourceM.GetString("dsettings"), "gsettings");
+            menuG.AddItem(new MenuItem("GankLevel", resourceM.GetString("GankLevel")).SetValue(new Slider(5, 1, 18)));
+            menuG.AddItem(
+                new MenuItem("GankFrequency", resourceM.GetString("GankFrequency")).SetValue(new Slider(100, 0, 100)));
+            menuG.AddItem(
+                new MenuItem("GankRange", resourceM.GetString("GankRange")).SetValue(new Slider(7000, 0, 20000)));
+            menuG.AddItem(new MenuItem("ComboSmite", resourceM.GetString("ComboSmite"))).SetValue(true);
             menu.AddSubMenu(menuG);
-            menu.AddItem(new MenuItem("Enabled", "Enabled")).SetValue(true);
-            menu.AddItem(new MenuItem("AutoClose", "Close at the end")).SetValue(true);
-            Menu menuChamps = new Menu("Supported champions", "supported");
-            menuChamps.AddItem(new MenuItem("supportedYi", "Master Yi"));
-            menuChamps.AddItem(new MenuItem("supportedWarwick", "Warwick"));
-            menuChamps.AddItem(new MenuItem("supportedShyvana", "Shyvana"));
-            menuChamps.AddItem(new MenuItem("supportedJax", "Jax"));
-            menuChamps.AddItem(new MenuItem("supportedXinZhao", "Xin Zhao"));
-            menuChamps.AddItem(new MenuItem("supportedNocturne", "Nocturne"));
-            menuChamps.AddItem(new MenuItem("supportedEvelyn", "Evelynn"));
-            menuChamps.AddItem(new MenuItem("supportedVolibear", "Volibear"));
-            menuChamps.AddItem(new MenuItem("supportedTryndamere", "Tryndamere"));
+            menu.AddItem(new MenuItem("Enabled", resourceM.GetString("Enabled"))).SetValue(true);
+            menu.AddItem(new MenuItem("AutoClose", resourceM.GetString("AutoClose"))).SetValue(true);
+            Menu menuChamps = new Menu(resourceM.GetString("supported"), "supported");
+            menuChamps.AddItem(new MenuItem("supportedYi", resourceM.GetString("supportedYi")));
+            menuChamps.AddItem(new MenuItem("supportedWarwick", resourceM.GetString("supportedWarwick")));
+            menuChamps.AddItem(new MenuItem("supportedShyvana", resourceM.GetString("supportedShyvana")));
+            menuChamps.AddItem(new MenuItem("supportedJax", resourceM.GetString("supportedJax")));
+            menuChamps.AddItem(new MenuItem("supportedXinZhao", resourceM.GetString("supportedXinZhao")));
+            menuChamps.AddItem(new MenuItem("supportedNocturne", resourceM.GetString("supportedNocturne")));
+            menuChamps.AddItem(new MenuItem("supportedEvelyn", resourceM.GetString("supportedEvelyn")));
+            menuChamps.AddItem(new MenuItem("supportedVolibear", resourceM.GetString("supportedVolibear")));
+            menuChamps.AddItem(new MenuItem("supportedTryndamere", resourceM.GetString("supportedTryndamere")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
+
+            Menu menuLang = new Menu(resourceM.GetString("lsetting"), "lsetting");
+            menuLang.AddItem(
+                new MenuItem("Language", resourceM.GetString("Language")).SetValue(
+                    new StringList(new[] { "English", "Chinese" })));
+            menuLang.AddItem(
+                new MenuItem("AutoJungleInfoReload", resourceM.GetString("AutoJungleInfoReload")).SetFontStyle(
+                    FontStyle.Bold, SharpDX.Color.Red));
+            menu.AddSubMenu(menuLang);
             menu.AddItem(
-            new MenuItem("AutoJungle", "Soresu | Updated by LOVETAIWAN v" + Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", "."))
-            .SetFontStyle(FontStyle.Bold, SharpDX.Color.Red));
+                new MenuItem(
+                    "AutoJungleInfo2",
+                    resourceM.GetString("AutoJungleInfo2") +
+                    Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", ".")).SetFontStyle(
+                        FontStyle.Bold, SharpDX.Color.Red));
             menu.AddItem(
-            new MenuItem("AutoJungle2", "F5 After Warrier/Bloodrazor,Bot will stop working!")
-            .SetFontStyle(FontStyle.Bold, SharpDX.Color.Purple));
+                new MenuItem("AutoJungleInfo3", resourceM.GetString("AutoJungleInfo3")).SetFontStyle(
+                    FontStyle.Bold, SharpDX.Color.Purple));
 
             menu.AddToMainMenu();
+
+            menu.Item("Language").ValueChanged += OnValueChanged;
         }
 
         #endregion
