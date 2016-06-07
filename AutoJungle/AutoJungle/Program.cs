@@ -33,7 +33,7 @@ namespace AutoJungle
         public static Vector3 pos;
 
         public static ResourceManager resourceM;
-        public static CultureInfo culture;
+        public static string culture;
         public static String[] languages = new String[] { "English", "Chinese" };
         public static String[] languagesShort = new String[] { "en", "cn" };
         public static string fileName, path;
@@ -598,7 +598,7 @@ namespace AutoJungle
                     {
                         continue;
                     }
-                    if (Helpers.AlliesThere(possibleTarget.Position) + 1 <
+                    if (Helpers.AlliesThere(possibleTarget.Position, 3000) + 1 <
                         possibleTarget.Position.CountEnemiesInRange(GameInfo.ChampionRange))
                     {
                         continue;
@@ -608,7 +608,7 @@ namespace AutoJungle
                         continue;
                     }
                     var ally =
-                        HeroManager.Allies.Where(a => !a.IsDead && a.Distance(possibleTarget) < 2000)
+                        HeroManager.Allies.Where(a => !a.IsDead && a.Distance(possibleTarget) < 3000)
                             .OrderBy(a => a.Distance(possibleTarget))
                             .FirstOrDefault();
                     var hp = possibleTarget.Health - myDmg * menu.Item("GankFrequency").GetValue<Slider>().Value / 100f;
@@ -1335,10 +1335,10 @@ namespace AutoJungle
                 }
                 else
                 {
-                    var cultureString = File.ReadLines(path + fileName).First();
-                    Console.WriteLine(cultureString);
-                    resourceM = new ResourceManager("AutoJungle.Resource." + cultureString, typeof(Program).Assembly);
-                    Console.WriteLine("Lang set to " + cultureString);
+                    culture = File.ReadLines(path + fileName).First();
+                    Console.WriteLine(culture);
+                    resourceM = new ResourceManager("AutoJungle.Resource." + culture, typeof(Program).Assembly);
+                    Console.WriteLine("Lang set to " + culture);
                 }
             }
             catch (Exception e)
@@ -1417,7 +1417,7 @@ namespace AutoJungle
             Menu menuLang = new Menu(resourceM.GetString("lsetting"), "lsetting");
             menuLang.AddItem(
                 new MenuItem("Language", resourceM.GetString("Language")).SetValue(
-                    new StringList(new[] { "English", "Chinese" })));
+                    new StringList(new[] { "English", "Chinese" }, GetDefault())));
             menuLang.AddItem(
                 new MenuItem("AutoJungleInfoReload", resourceM.GetString("AutoJungleInfoReload")).SetFontStyle(
                     FontStyle.Bold, SharpDX.Color.Red));
@@ -1428,13 +1428,18 @@ namespace AutoJungle
                     resourceM.GetString("AutoJungleInfo2") +
                     Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", ".")).SetFontStyle(
                         FontStyle.Bold, SharpDX.Color.Red));
-            menu.AddItem(
+            /*menu.AddItem(
                 new MenuItem("AutoJungleInfo3", resourceM.GetString("AutoJungleInfo3")).SetFontStyle(
-                    FontStyle.Bold, SharpDX.Color.Purple));
+                    FontStyle.Bold, SharpDX.Color.Purple));*/
 
             menu.AddToMainMenu();
 
             menu.Item("Language").ValueChanged += OnValueChanged;
+        }
+
+        private static int GetDefault()
+        {
+            return languagesShort.ToList().IndexOf(culture);
         }
 
         #endregion
