@@ -784,8 +784,8 @@ namespace AutoJungle
             {
                 Q.CastOnUnit(targetMob);
             }
-            if (W.IsReady() && Hero.Distance(targetMob) < 300 && (Program._GameInfo.SmiteableMob != null) ||
-                Program._GameInfo.MinionsAround > 3)
+            if (W.IsReady() && Hero.Distance(targetMob) < 300 &&
+                (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
             {
                 if (Hero.Mana > Q.ManaCost + W.ManaCost || Hero.HealthPercent > 70)
                 {
@@ -807,6 +807,10 @@ namespace AutoJungle
             if (Hero.Spellbook.IsChanneling)
             {
                 return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
             }
             if (E.IsReady() && Hero.IsWindingUp)
             {

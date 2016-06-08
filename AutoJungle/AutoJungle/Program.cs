@@ -34,8 +34,8 @@ namespace AutoJungle
 
         public static ResourceManager resourceM;
         public static string culture;
-        public static String[] languages = new String[] { "English", "Chinese" };
-        public static String[] languagesShort = new String[] { "en", "cn" };
+        public static String[] languages = new String[] { "English", "Chinese (Simplified)", "Chinese (Traditional)" };
+        public static String[] languagesShort = new String[] { "en", "cn", "tw" };
         public static string fileName, path;
 
         #region Main
@@ -508,8 +508,11 @@ namespace AutoJungle
                     }
                     var mob =
                         Helpers.getMobs(player.Position, GameInfo.ChampionRange)
-                            .OrderBy(m => m.UnderTurret(true))
-                            .ThenByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
+                            .Where(
+                                m =>
+                                    (!m.UnderTurret(true) ||
+                                     (enemyTurret != null && Helpers.getAllyMobs(enemyTurret.Position, 1000).Count > 0)))
+                            .OrderByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
                             .ThenBy(m => m.Distance(player))
                             .FirstOrDefault();
                     if (mob != null)
@@ -678,8 +681,8 @@ namespace AutoJungle
                 {
                     if (
                         ObjectManager.Get<Obj_AI_Turret>()
-                            .FirstOrDefault(t => t.Distance(_GameInfo.MoveTo) < GameInfo.ChampionRange && t.IsAlly) !=
-                        null && (_GameInfo.GameState == State.Grouping || _GameInfo.GameState == State.Defending))
+                            .FirstOrDefault(t => t.Distance(_GameInfo.MoveTo) < 2000 && t.IsAlly) != null &&
+                        (_GameInfo.GameState == State.Grouping || _GameInfo.GameState == State.Defending))
                     {
                         tempstate = State.Defending;
                     }
@@ -735,7 +738,7 @@ namespace AutoJungle
         {
             return (Helpers.AlliesThere(pos) == 0 || Helpers.AlliesThere(pos) >= 2 ||
                     player.Distance(_GameInfo.SpawnPoint) < 6000 || player.Distance(_GameInfo.SpawnPointEnemy) < 6000 ||
-                    player.Level >= 14) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
+                    player.Level >= 10) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
                    Helpers.getMobs(pos, GameInfo.ChampionRange).Count +
                    _GameInfo.EnemyStructures.Count(p => p.Distance(pos) < GameInfo.ChampionRange) > 0 &&
                    !_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600) && _GameInfo.SmiteableMob == null &&
@@ -903,7 +906,7 @@ namespace AutoJungle
                 var objAiBase = minis.OrderBy(m => m.Distance(_GameInfo.SpawnPointEnemy)).FirstOrDefault();
                 if (objAiBase != null &&
                     (objAiBase.CountAlliesInRange(GameInfo.ChampionRange) == 0 ||
-                     objAiBase.CountAlliesInRange(GameInfo.ChampionRange) >= 2 || player.Level >= 14) &&
+                     objAiBase.CountAlliesInRange(GameInfo.ChampionRange) >= 2 || player.Level >= 10) &&
                     Helpers.getMobs(objAiBase.Position, 1000).Count == 0)
                 {
                     _GameInfo.MoveTo = objAiBase.Position.Extend(_GameInfo.SpawnPoint, 100);
@@ -1260,7 +1263,6 @@ namespace AutoJungle
         {
             try
             {
-                Console.WriteLine("wtf");
                 var index = languages.ToList().IndexOf(onValueChangeEventArgs.GetNewValue<StringList>().SelectedValue);
                 File.WriteAllText(path + fileName, languagesShort[index], Encoding.Default);
                 Console.WriteLine("Changed to " + languagesShort[index]);
@@ -1416,8 +1418,7 @@ namespace AutoJungle
 
             Menu menuLang = new Menu(resourceM.GetString("lsetting"), "lsetting");
             menuLang.AddItem(
-                new MenuItem("Language", resourceM.GetString("Language")).SetValue(
-                    new StringList(new[] { "English", "Chinese" }, GetDefault())));
+                new MenuItem("Language", resourceM.GetString("Language")).SetValue(new StringList(languages, 0)));
             menuLang.AddItem(
                 new MenuItem("AutoJungleInfoReload", resourceM.GetString("AutoJungleInfoReload")).SetFontStyle(
                     FontStyle.Bold, SharpDX.Color.Red));
@@ -1427,19 +1428,13 @@ namespace AutoJungle
                     "AutoJungleInfo2",
                     resourceM.GetString("AutoJungleInfo2") +
                     Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", ".")).SetFontStyle(
-                        FontStyle.Bold, SharpDX.Color.Red));
+                        FontStyle.Bold, SharpDX.Color.Orange));
             /*menu.AddItem(
                 new MenuItem("AutoJungleInfo3", resourceM.GetString("AutoJungleInfo3")).SetFontStyle(
                     FontStyle.Bold, SharpDX.Color.Purple));*/
 
             menu.AddToMainMenu();
-
             menu.Item("Language").ValueChanged += OnValueChanged;
-        }
-
-        private static int GetDefault()
-        {
-            return languagesShort.ToList().IndexOf(culture);
         }
 
         #endregion
