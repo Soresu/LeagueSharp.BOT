@@ -852,6 +852,10 @@ namespace AutoJungle
             {
                 return false;
             }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
             if (E.IsReady() && Hero.IsWindingUp)
             {
                 E.Cast();
