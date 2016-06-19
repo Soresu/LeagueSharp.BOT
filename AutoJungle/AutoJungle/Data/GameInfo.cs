@@ -64,6 +64,7 @@ namespace AutoJungle
             {
                 CurrentMonster = 1;
             }
+            Console.WriteLine("AutoJungle Loaded");
         }
 
         public bool IsUnderAttack()
