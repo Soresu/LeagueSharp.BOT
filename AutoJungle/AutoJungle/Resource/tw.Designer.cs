@@ -196,6 +196,15 @@ namespace AutoJungle.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 血量%使用藥水.
+        /// </summary>
+        internal static string HealthToPotion {
+            get {
+                return ResourceManager.GetString("HealthToPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 回城血量(%).
         /// </summary>
         internal static string HealtToBack {
@@ -210,6 +219,15 @@ namespace AutoJungle.Resource {
         internal static string jsettings {
             get {
                 return ResourceManager.GetString("jsettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summoner Spells.
+        /// </summary>
+        internal static string sssettings {
+            get {
+                return ResourceManager.GetString("jssettings", resourceCulture);
             }
         }
         

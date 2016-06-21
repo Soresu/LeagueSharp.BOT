@@ -216,4 +216,22 @@
   <data name="UseTrinket" xml:space="preserve">
     <value>Use Trinket</value>
   </data>
+  <data name="HealthToPotion" xml:space="preserve">
+    <value>HP% to use potion</value>
+  </data>
+  <data name="sssettings" xml:space="preserve">
+    <value>Summoner Spells</value>
+  </data>
+  <data name="UseBarrier" xml:space="preserve">
+    <value>Use Barrier</value>
+  </data>
+  <data name="UseHeal" xml:space="preserve">
+    <value>Use Heal</value>
+  </data>
+  <data name="UseIgnite" xml:space="preserve">
+    <value>Use Ignite</value>
+  </data>
+  <data name="UseIgniteOpt" xml:space="preserve">
+    <value>   Change focus if ignite kills</value>
+  </data>
 </root>

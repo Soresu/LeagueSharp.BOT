@@ -232,23 +232,27 @@ namespace AutoJungle
             _GameInfo.AllyStructures = GetStructures(true, _GameInfo.SpawnPointEnemy);
             _GameInfo.EnemyStructures = GetStructures(false, _GameInfo.SpawnPoint);
             _GameInfo.ClosestWardPos = Helpers.GetClosestWard();
+            if (player.Level >= 18)
+            {
+                AutoLevel.Disable();
+            }
         }
 
         private static IEnumerable<Vector3> GetStructures(bool ally, Vector3 basePos)
         {
             var turrets =
                 ObjectManager.Get<Obj_Turret>()
-                    .Where(t => t.IsAlly == ally && t.IsValid && t.Health > 0 && t.Health < t.MaxHealth)
+                    .Where(t => t.IsAlly == ally && t.IsValid && t.Health > 0 && t.Position.Distance(basePos) > 700)
                     .OrderBy(t => t.Position.Distance(basePos))
                     .Select(t => t.Position);
             var inhibs =
                 ObjectManager.Get<Obj_BarracksDampener>()
-                    .Where(t => t.IsAlly == ally && t.IsValid && t.Health > 0 && !t.IsDead && t.Health < t.MaxHealth)
+                    .Where(t => t.IsAlly == ally && t.IsValid && t.Health > 0)
                     .OrderBy(t => t.Position.Distance(basePos))
                     .Select(t => t.Position);
             var nexus =
                 ObjectManager.Get<Obj_HQ>()
-                    .Where(t => t.IsAlly == ally && t.IsValid && t.Health > 0 && !t.IsDead && t.Health < t.MaxHealth)
+                    .Where(t => t.IsAlly == ally && t.IsValid && t.Health > 0)
                     .OrderBy(t => t.Position.Distance(basePos))
                     .Select(t => t.Position);
 
@@ -280,6 +284,7 @@ namespace AutoJungle
             {
                 if (player.Distance(_GameInfo.SpawnPoint) > 6000)
                 {
+                    Console.WriteLine("recalling" + Environment.TickCount);
                     player.Spellbook.CastSpell(SpellSlot.Recall);
                 }
                 else
@@ -299,24 +304,23 @@ namespace AutoJungle
 
         private static void CastSpells()
         {
-            if (_GameInfo.Target == null)
-            {
-                return;
-            }
             switch (_GameInfo.GameState)
             {
                 case State.FightIng:
                     _GameInfo.Champdata.Combo();
+                    Champdata.UseSpellsCombo();
                     break;
                 case State.Ganking:
                     break;
                 case State.Jungling:
                     _GameInfo.Champdata.JungleClear();
                     UsePotions();
+                    Champdata.UseSpellsDef();
                     break;
                 case State.LaneClear:
                     _GameInfo.Champdata.JungleClear();
                     UsePotions();
+                    Champdata.UseSpellsDef();
                     break;
                 case State.Objective:
                     if (_GameInfo.Target is Obj_AI_Hero)
@@ -327,6 +331,10 @@ namespace AutoJungle
                     {
                         _GameInfo.Champdata.JungleClear();
                     }
+                    Champdata.UseSpellsDef();
+                    break;
+                case State.Retreat:
+                    Champdata.UseSpellsDef();
                     break;
                 default:
                     break;
@@ -335,7 +343,8 @@ namespace AutoJungle
 
         private static void UsePotions()
         {
-            if (Items.HasItem(2031) && Items.CanUseItem(2031) && player.HealthPercent < 80 &&
+            if (Items.HasItem(2031) && Items.CanUseItem(2031) &&
+                player.HealthPercent < menu.Item("HealthToPotion").GetValue<Slider>().Value &&
                 !player.Buffs.Any(b => b.Name.Equals("ItemCrystalFlask")))
             {
                 Items.UseItem(2031);
@@ -414,6 +423,7 @@ namespace AutoJungle
                 if (itemToBuy.Price <= player.Gold)
                 {
                     player.BuyItem((ItemId) itemToBuy.ItemId);
+                    UpdateLimiter += new Random().Next(1000, 1800);
                     if (itemToBuy.Index > 9 && Items.HasItem(2031))
                     {
                         player.SellItem(player.InventoryItems.First(i => i.Id == (ItemId) 2031).Slot);
@@ -451,6 +461,12 @@ namespace AutoJungle
 
         private static Obj_AI_Base GetTarget()
         {
+            var enemyTurret =
+                ObjectManager.Get<Obj_AI_Turret>()
+                    .FirstOrDefault(
+                        t =>
+                            t.IsEnemy && !t.IsDead && t.Distance(player) < 2000 &&
+                            Helpers.getAllyMobs(t.Position, 1250).Count(m => m.UnderTurret(true)) > 0);
             switch (_GameInfo.GameState)
             {
                 case State.Objective:
@@ -480,12 +496,22 @@ namespace AutoJungle
                     return Helpers.getMobs(player.Position, 1000).OrderByDescending(m => m.MaxHealth).FirstOrDefault();
                     break;
                 case State.LaneClear:
-                    return
+                    var moblc =
                         Helpers.getMobs(player.Position, GameInfo.ChampionRange)
                             .Where(m => !m.UnderTurret(true))
                             .OrderByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
                             .ThenBy(m => m.Distance(player))
                             .FirstOrDefault();
+                    if (moblc != null)
+                    {
+                        _GameInfo.Target = moblc;
+                        return moblc;
+                    }
+                    if (enemyTurret != null)
+                    {
+                        return enemyTurret;
+                    }
+
                     break;
                 case State.Pushing:
                     var enemy = Helpers.GetTargetEnemy();
@@ -495,12 +521,6 @@ namespace AutoJungle
                         _GameInfo.Champdata.Combo();
                         return enemy;
                     }
-                    var enemyTurret =
-                        ObjectManager.Get<Obj_AI_Turret>()
-                            .FirstOrDefault(
-                                t =>
-                                    t.IsEnemy && !t.IsDead && t.Distance(player) < 2000 &&
-                                    Helpers.getAllyMobs(t.Position, 1250).Count(m => m.UnderTurret(true)) > 0);
                     var mob =
                         Helpers.getMobs(player.Position, GameInfo.ChampionRange)
                             .Where(
@@ -738,11 +758,21 @@ namespace AutoJungle
 
         private static bool CheckLaneClear(Vector3 pos)
         {
+            if (Debug)
+            {
+                Console.WriteLine(
+                    Helpers.getMobs(pos, GameInfo.ChampionRange).Count +
+                    _GameInfo.EnemyStructures.Count(p => p.Distance(pos) < GameInfo.ChampionRange));
+                Console.WriteLine(!_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600));
+            }
             return (Helpers.AlliesThere(pos) == 0 || Helpers.AlliesThere(pos) >= 2 ||
                     player.Distance(_GameInfo.SpawnPoint) < 6000 || player.Distance(_GameInfo.SpawnPointEnemy) < 6000 ||
                     player.Level >= 10) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
                    Helpers.getMobs(pos, GameInfo.ChampionRange).Count +
-                   _GameInfo.EnemyStructures.Count(p => p.Distance(pos) < GameInfo.ChampionRange) > 0 &&
+                   _GameInfo.EnemyStructures.Count(
+                       p =>
+                           p.Distance(pos) < GameInfo.ChampionRange &&
+                           Helpers.getAllyMobs(p, 1250).Count(m => m.UnderTurret(true)) > 0) > 0 &&
                    !_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600) && _GameInfo.SmiteableMob == null &&
                    _GameInfo.GameState != State.Retreat;
         }
@@ -1392,16 +1422,35 @@ namespace AutoJungle
             Menu menuJ = new Menu(resourceM.GetString("jsettings"), "jsettings");
             menuJ.AddItem(
                 new MenuItem("HealtToBack", resourceM.GetString("HealtToBack")).SetValue(new Slider(35, 0, 100)));
-            menuJ.AddItem(new MenuItem("UseTrinket", resourceM.GetString("UseTrinket"))).SetValue(true);
+            menuJ.AddItem(
+                new MenuItem("HealthToPotion", resourceM.GetString("HealthToPotion")).SetValue(new Slider(80, 0, 100)));
             menuJ.AddItem(new MenuItem("EnemyJungle", resourceM.GetString("EnemyJungle"))).SetValue(true);
+            menuJ.AddItem(new MenuItem("UseTrinket", resourceM.GetString("UseTrinket"))).SetValue(true);
+
+            Menu menuJspells = new Menu(resourceM.GetString("sssettings"), "jssettings");
+            menuJspells.AddItem(
+                new MenuItem("UseBarrierJ", resourceM.GetString("UseBarrier")).SetValue(new Slider(0, -1, 100)));
+            menuJspells.AddItem(
+                new MenuItem("UseHealJ", resourceM.GetString("UseHeal")).SetValue(new Slider(0, -1, 100)));
+            menuJ.AddSubMenu(menuJspells);
             menu.AddSubMenu(menuJ);
-            Menu menuG = new Menu(resourceM.GetString("dsettings"), "gsettings");
+            Menu menuG = new Menu(resourceM.GetString("gsettings"), "gsettings");
             menuG.AddItem(new MenuItem("GankLevel", resourceM.GetString("GankLevel")).SetValue(new Slider(5, 1, 18)));
             menuG.AddItem(
                 new MenuItem("GankFrequency", resourceM.GetString("GankFrequency")).SetValue(new Slider(100, 0, 100)));
             menuG.AddItem(
                 new MenuItem("GankRange", resourceM.GetString("GankRange")).SetValue(new Slider(7000, 0, 20000)));
             menuG.AddItem(new MenuItem("ComboSmite", resourceM.GetString("ComboSmite"))).SetValue(true);
+
+            Menu menuGspells = new Menu(resourceM.GetString("sssettings"), "gssettings");
+            menuGspells.AddItem(
+                new MenuItem("UseBarrierG", resourceM.GetString("UseBarrier")).SetValue(new Slider(0, -1, 100)));
+            menuGspells.AddItem(
+                new MenuItem("UseHealG", resourceM.GetString("UseHeal")).SetValue(new Slider(0, -1, 100)));
+            menuGspells.AddItem(new MenuItem("UseIgniteG", resourceM.GetString("UseIgnite"))).SetValue(true);
+            menuGspells.AddItem(new MenuItem("UseIgniteOpt", resourceM.GetString("UseIgniteOpt"))).SetValue(true);
+            menuG.AddSubMenu(menuGspells);
+
             menu.AddSubMenu(menuG);
             menu.AddItem(new MenuItem("Enabled", resourceM.GetString("Enabled"))).SetValue(true);
             menu.AddItem(new MenuItem("AutoClose", resourceM.GetString("AutoClose"))).SetValue(true);

@@ -196,6 +196,15 @@ namespace AutoJungle.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 血量%使用药水.
+        /// </summary>
+        internal static string HealthToPotion {
+            get {
+                return ResourceManager.GetString("HealthToPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 回城血量(%).
         /// </summary>
         internal static string HealtToBack {
@@ -246,6 +255,15 @@ namespace AutoJungle.Resource {
         internal static string NoSmite {
             get {
                 return ResourceManager.GetString("NoSmite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summoner Spells.
+        /// </summary>
+        internal static string sssettings {
+            get {
+                return ResourceManager.GetString("sssettings", resourceCulture);
             }
         }
         
@@ -345,6 +363,42 @@ namespace AutoJungle.Resource {
         internal static string supportedYi {
             get {
                 return ResourceManager.GetString("supportedYi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Barrier.
+        /// </summary>
+        internal static string UseBarrier {
+            get {
+                return ResourceManager.GetString("UseBarrier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Heal.
+        /// </summary>
+        internal static string UseHeal {
+            get {
+                return ResourceManager.GetString("UseHeal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Ignite.
+        /// </summary>
+        internal static string UseIgnite {
+            get {
+                return ResourceManager.GetString("UseIgnite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to    Change focus if ignite kills.
+        /// </summary>
+        internal static string UseIgniteOpt {
+            get {
+                return ResourceManager.GetString("UseIgniteOpt", resourceCulture);
             }
         }
         

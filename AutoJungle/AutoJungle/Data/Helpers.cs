@@ -116,10 +116,29 @@ namespace AutoJungle.Data
                          (e.Health < e.GetAutoAttackDamage(e, true) * 2 &&
                           e.Distance(Program.player) < Orbwalking.GetRealAutoAttackRange(e))) &&
                         e.Distance(Program.player) < GameInfo.ChampionRange)
-                    .OrderByDescending(e => GetComboDMG(Program.player, e) > e.Health)
+                    .OrderByDescending(
+                        e => !Program.menu.Item("UseIgniteOpt").GetValue<Boolean>() || IgniteDamage(e) < e.Health)
+                    .ThenByDescending(e => GetComboDMG(Program.player, e) > e.Health)
                     .ThenByDescending(e => e.Distance(Program.player) < 500)
                     .ThenBy(e => e.Health)
                     .FirstOrDefault();
+        }
+
+        public static float IgniteDamage(Obj_AI_Hero target)
+        {
+            var igniteBuff =
+                target.Buffs.Where(buff => buff.Name == "summonerdot").OrderBy(buff => buff.StartTime).FirstOrDefault();
+            if (igniteBuff == null)
+            {
+                return 0;
+            }
+            else
+            {
+                var igniteDamage = Math.Floor(igniteBuff.EndTime - Game.ClockTime) *
+                                   ((Obj_AI_Hero) igniteBuff.Caster).GetSummonerSpellDamage(
+                                       target, Damage.SummonerSpell.Ignite) / 5;
+                return (float) igniteDamage;
+            }
         }
 
         public static Obj_AI_Base GetNearest(Vector3 pos, float dist = 700f)
