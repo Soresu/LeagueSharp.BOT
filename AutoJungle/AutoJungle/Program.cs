@@ -133,6 +133,17 @@ namespace AutoJungle
                         return;
                     }
                     break;
+
+                case "Nunu":
+                    var rActive = player.HasBuff("AbsoluteZero");
+                    if (_GameInfo.GameState == State.FightIng)
+                    {
+                        if (player.Spellbook.IsChanneling && (target.IsValidTarget(650)))
+                        {
+                            return;
+                        }
+                    }
+                    break;
             }
         }
 
@@ -400,6 +411,12 @@ namespace AutoJungle
                 }
                 return false;
             }
+
+            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || ObjectManager.Player.HasBuff("ElixirOfSorcery"))
+            {
+                return false;
+            }
+
             var current =
                 ItemHandler.ItemList.Where(i => Items.HasItem(i.ItemId))
                     .OrderByDescending(i => i.Index)
@@ -1464,6 +1481,9 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedEvelyn", resourceM.GetString("supportedEvelyn")));
             menuChamps.AddItem(new MenuItem("supportedVolibear", resourceM.GetString("supportedVolibear")));
             menuChamps.AddItem(new MenuItem("supportedTryndamere", resourceM.GetString("supportedTryndamere")));
+            menuChamps.AddItem(new MenuItem("supportedOlaf", resourceM.GetString("supportedOlaf")));
+            menuChamps.AddItem(new MenuItem("supportedNunu", resourceM.GetString("supportedNunu")));            
+            menuChamps.AddItem(new MenuItem("supportedUdyr", resourceM.GetString("supportedUdyr")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
@@ -1480,7 +1500,7 @@ namespace AutoJungle
                     "AutoJungleInfo2",
                     resourceM.GetString("AutoJungleInfo2") +
                     Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", ".")).SetFontStyle(
-                        FontStyle.Bold, SharpDX.Color.Orange));
+                        FontStyle.Bold, SharpDX.Color.Red));
             /*menu.AddItem(
                 new MenuItem("AutoJungleInfo3", resourceM.GetString("AutoJungleInfo3")).SetFontStyle(
                     FontStyle.Bold, SharpDX.Color.Purple));*/

@@ -126,9 +126,6 @@
   <data name="AutoJungleInfo2" xml:space="preserve">
     <value>Soresu | Updated by LOVETAIWAN v</value>
   </data>
-  <data name="AutoJungleInfo3" xml:space="preserve">
-    <value>F5 After Warrier/Bloodrazor,Bot will stop working!</value>
-  </data>
   <data name="AutoJungleInfoReload" xml:space="preserve">
     <value>You have to reload the assembly (F5)!</value>
   </data>
@@ -213,6 +210,15 @@
   <data name="supportedYi" xml:space="preserve">
     <value>Master Yi</value>
   </data>
+  <data name="supportedOlaf" xml:space="preserve">
+    <value>Olaf</value>
+  </data>
+  <data name="supportedNunu" xml:space="preserve">
+    <value>Nunu</value>
+  </data>
+  <data name="supportedUdyr" xml:space="preserve">
+    <value>Udyr</value>
+  </data>
   <data name="UseTrinket" xml:space="preserve">
     <value>Use Trinket</value>
   </data>
@@ -232,6 +238,6 @@
     <value>Use Ignite</value>
   </data>
   <data name="UseIgniteOpt" xml:space="preserve">
-    <value>   Change focus if ignite kills</value>
+    <value>Change focus if ignite kills</value>
   </data>
 </root>

@@ -196,54 +196,312 @@ namespace AutoJungle
                     Combo = MWCombo;
                     Console.WriteLine("Tryndamere loaded");
                     break;
-                default:
+
+                case "Olaf":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.Bro;
+
+                    Q = new Spell(SpellSlot.Q, 1000);
+                    W = new Spell(SpellSlot.W);
+                    E = new Spell(SpellSlot.E, 325);
+                    R = new Spell(SpellSlot.R);
+
+                    Autolvl = new AutoLeveler(new int[] { 0, 1, 2, 0, 0, 3, 0, 2, 0, 2, 3, 2, 2, 1, 1, 3, 1, 1 });
+
+                    JungleClear = BroJungleClear;
+                    Combo = BroCombo;
+                    Console.WriteLine("Brolaf loaded");
+                    break;
+
+                case "Nunu":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.Nu;
+
+                    Q = new Spell(SpellSlot.Q, 1000);
+                    W = new Spell(SpellSlot.W);
+                    E = new Spell(SpellSlot.E, 325);
+                    R = new Spell(SpellSlot.R);
+
+                    Autolvl = new AutoLeveler(new int[] { 0, 1, 2, 0, 0, 3, 0, 2, 0, 2, 3, 2, 2, 1, 1, 3, 1, 1 });
+
+                    JungleClear = NuJungleClear;
+                    Combo = NuCombo;
+                    Console.WriteLine("Nunu loaded");
+                    break;
+
+                    case "Udyr":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.UD;
+
+                    Q = new Spell(SpellSlot.Q);
+                    W = new Spell(SpellSlot.W);
+                    E = new Spell(SpellSlot.E);
+                    R = new Spell(SpellSlot.R, 250);
+
+                    Autolvl = new AutoLeveler(new int[] { 3, 1, 2, 3, 3, 0, 3, 1, 3, 1, 1, 1, 2, 2, 2, 2, 0, 0 });
+
+                    JungleClear = UDJungleClear;
+                    Combo = UDCombo;
+                    Console.WriteLine("Udyr loaded");
+                    break;
+                    default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
-                //nidale w buff?(优先）)nunu R check | sej，结束skr，amumu？ graves！
+                //nidale w buff?(优先）) | sej，结束skr，amumu？ graves！
             }
         }
 
-        public static void UseSpellsCombo()
-        {
-            var target = Program._GameInfo.Target;
-            var igniteDmg = Program.player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
-            if (target != null && Program.menu.Item("UseIgniteG").GetValue<Boolean>() &&
-                target.Distance(Program.player) < 600 && target.Health < igniteDmg - 15)
-            {
-                GameInfo.CastSpell(Program._GameInfo.Ignite, target);
-            }
-            var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
-            var healSlider = Program.menu.Item("UseHealG").GetValue<Slider>().Value;
-            if (healSlider >= 0 &&
-                ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
-            {
-                GameInfo.CastSpell(Program._GameInfo.Heal);
-            }
+         public static void UseSpellsCombo()
+         {
+             var target = Program._GameInfo.Target;
+             var igniteDmg = Program.player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+             if (target != null && Program.menu.Item("UseIgniteG").GetValue<Boolean>() &&
+                 target.Distance(Program.player) < 600 && target.Health < igniteDmg - 15)
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Ignite, target);
+             }
+             var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
+             var healSlider = Program.menu.Item("UseHealG").GetValue<Slider>().Value;
+             if (healSlider >= 0 &&
+                 ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Heal);
+             }
 
-            var barrierSlider = Program.menu.Item("UseBarrierG").GetValue<Slider>().Value;
-            if (barrierSlider >= 0 &&
-                ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             var barrierSlider = Program.menu.Item("UseBarrierG").GetValue<Slider>().Value;
+             if (barrierSlider >= 0 &&
+                 ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Barrier);
+             }
+         }
+
+         public static void UseSpellsDef()
+         {
+             var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
+             var healSlider = Program.menu.Item("UseHealJ").GetValue<Slider>().Value;
+             if (healSlider >= 0 &&
+                 ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Heal);
+             }
+
+             var barrierSlider = Program.menu.Item("UseBarrierJ").GetValue<Slider>().Value;
+             if (barrierSlider >= 0 &&
+                 ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Barrier);
+             }
+         }
+
+        private bool UDCombo()
+        {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
             {
-                GameInfo.CastSpell(Program._GameInfo.Barrier);
+                return false;
             }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            if (E.IsReady() && targetHero.IsValidTarget(700))
+            {
+                E.Cast();
+            }
+            if (R.IsReady())
+            {
+                R.Cast();
+            }
+            if (W.IsReady())
+            {
+                W.Cast();
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            return false;
         }
 
-        public static void UseSpellsDef()
+        private bool UDJungleClear()
         {
-            var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
-            var healSlider = Program.menu.Item("UseHealJ").GetValue<Slider>().Value;
-            if (healSlider >= 0 &&
-                ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
             {
-                GameInfo.CastSpell(Program._GameInfo.Heal);
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
             }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            if (R.IsReady() && Hero.Distance(targetMob) < R.Range && Hero.ManaPercent > 30 &&
+                (Helpers.getMobs(Hero.Position, R.Range).Count >= 2 || targetMob.MaxHealth > 700))
+            {
+                R.Cast();
+            }
+            if (W.IsReady() && Hero.Distance(targetMob) < 400 && Hero.ManaPercent > 30 || Hero.HealthPercent < 50)
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && Hero.Distance(targetMob) < 130 && Hero.ManaPercent > 60)
+            {
+                E.Cast();
+            }
+            ItemHandler.UseItemsJungle();
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
+        }
 
-            var barrierSlider = Program.menu.Item("UseBarrierJ").GetValue<Slider>().Value;
-            if (barrierSlider >= 0 &&
-                ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+        private bool NuCombo()
+        {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
             {
-                GameInfo.CastSpell(Program._GameInfo.Barrier);
+                return false;
             }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            /*
+            if (Q.IsReady() && targetmob != null && Hero.Distance(targetmob) < 700 || Hero.HealthPercent > 97)
+            {
+                Q.Cast();
+            }
+            */
+            if (W.IsReady() && !Hero.HasBuff("AbsoluteZero"))
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && !Hero.HasBuff("AbsoluteZero") && E.CanCast(targetHero))
+            {
+                E.CastOnUnit(targetHero);
+            }
+            if (R.IsReady() && !Hero.HasBuff("AbsoluteZero") && targetHero.IsValidTarget(125))
+            {
+                R.Cast();
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            return false;
+        }
+
+        private bool NuJungleClear()
+        {
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            if (Q.IsReady() && Hero.Distance(targetMob) < Q.Range &&
+                (Helpers.getMobs(Hero.Position, Q.Range).Count >= 1 || targetMob.MaxHealth > 125))
+            {
+                Q.Cast(targetMob);
+            }
+            if (W.IsReady())
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && E.CanCast(targetMob) && (Hero.ManaPercent > 60 || targetMob.MaxHealth > 700))
+            {
+                E.CastOnUnit(targetMob);
+            }
+            ItemHandler.UseItemsJungle();
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
+        }
+
+        private bool BroCombo()
+        {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            if (Q.IsReady() && targetHero.IsValidTarget(1000))
+            {
+                Q.Cast(targetHero);
+            }
+            if (E.IsReady() && Hero.HealthPercent > 30 && targetHero.IsValidTarget(325))
+            {
+                E.Cast(targetHero);
+            }
+            ItemHandler.UseItemsCombo(targetHero, true);
+            if (W.IsReady() && targetHero.IsValidTarget(325))
+            {
+                W.Cast();
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            return false;
+        }
+
+        private bool BroJungleClear()
+        {
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            if (Q.IsReady() && targetMob.IsValidTarget(325))
+            {
+                Q.Cast(targetMob);
+            }
+            ItemHandler.UseItemsJungle();
+            if (E.IsReady() && Hero.Distance(targetMob) < 300 &&
+                (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
+                if (Hero.HealthPercent > 45)
+            {
+                E.Cast(targetMob);
+            }
+            if (W.IsReady() && Hero.Distance(targetMob) < 300 &&
+                (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
+            {
+                if (Hero.Mana > Q.ManaCost + W.ManaCost || Hero.HealthPercent > 45)
+                {
+                    W.Cast();
+                }
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
         }
 
         private bool MWCombo()
@@ -890,8 +1148,8 @@ namespace AutoJungle
         private bool MasteryiCombo()
         {
             var targetHero = Program._GameInfo.Target;
-            if ((Hero.Spellbook.IsChanneling &&
-                 targetHero.Health > Program.player.GetAutoAttackDamage(targetHero, true) * 2) || targetHero == null)
+            if (Hero.Spellbook.IsChanneling &&
+                targetHero.Health > Program.player.GetAutoAttackDamage(targetHero, true) * 2)
             {
                 return false;
             }
@@ -915,7 +1173,8 @@ namespace AutoJungle
             {
                 Q.CastOnUnit(targetHero);
             }
-            if (W.IsReady() && Hero.HealthPercent < 25 || Program._GameInfo.DamageTaken >= Hero.Health / 3)
+            if ((Hero.Spellbook.IsChanneling &&
+                targetHero.Health > Program.player.GetAutoAttackDamage(targetHero, true) * 2) || targetHero == null)
             {
                 W.Cast();
             }

@@ -41,6 +41,15 @@ namespace AutoJungle.Data
                 case BuildType.YI:
                     SetlistYI();
                     break;
+                case BuildType.Bro:
+                    SetlistBro();
+                    break;
+                case BuildType.Nu:
+                    SetlistNu();
+                    break;
+                case BuildType.UD:
+                    SetlistUD();
+                    break;
             }
         }
 
@@ -69,6 +78,28 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(21, 2140, "嗑药", 500));
         }
 
+        private void SetlistUD()
+        {
+            ItemList.Add(new BuyingOrder(1, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
+            ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
+            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "鞋", 475));
+            ItemList.Add(new BuyingOrder(9, 3009, "BoS", 1150));
+            ItemList.Add(new BuyingOrder(10, 3057, "sheen", 1050));    
+            ItemList.Add(new BuyingOrder(11, 3025, "ICE", 1650));
+            ItemList.Add(new BuyingOrder(10, 1026, "棒", 850));
+            ItemList.Add(new BuyingOrder(11, 3124, "怒", 2750));
+            ItemList.Add(new BuyingOrder(12, 1031, "Chain Vest", 800));
+            ItemList.Add(new BuyingOrder(13, 3742, "Dead Man's Plate", 1800));
+            ItemList.Add(new BuyingOrder(16, 3211, "Spectres Cow", 1200));
+            ItemList.Add(new BuyingOrder(17, 3065, "Spirit Visage", 1600));
+            ItemList.Add(new BuyingOrder(18, 2138, "嗑药", 500));
+        }
+
         private void SetListASMANA()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
@@ -89,6 +120,31 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(16, (int) ItemId.Manamune, "Ravenous Hydra Melee Only", 1650));
             ItemList.Add(new BuyingOrder(17, (int) ItemId.Zeal, "Zeal", 1300));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Phantom_Dancer, "Phantom Dancer", 1500));
+        }
+
+        private void SetlistBro()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "打野刀", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 3751, "直接合成打野", 1100));
+            ItemList.Add(new BuyingOrder(7, 1401, "Cinderhulk", 625));
+            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 600));
+            ItemList.Add(new BuyingOrder(9, 1028, "Ruby Crystal", 400));
+            ItemList.Add(new BuyingOrder(10, 3044, "Phage", 950));
+            ItemList.Add(new BuyingOrder(11, 3133, "warhamm", 1100));
+            ItemList.Add(new BuyingOrder(12, 3071, "tbc", 750));
+            ItemList.Add(new BuyingOrder(13, 1031, "Chain Vest", 800));
+            ItemList.Add(new BuyingOrder(14, 3742, "Dead Man's Plate", 1800));
+            ItemList.Add(new BuyingOrder(15, 3009, "Boots of Swiftness", 600));
+            ItemList.Add(new BuyingOrder(16, 3052, "Jaurims Fist", 1300));
+            ItemList.Add(new BuyingOrder(17, 3077, "Tiamat", 1300));
+            ItemList.Add(new BuyingOrder(18, 3748, "Titanic Hydra", 1100));
+            ItemList.Add(new BuyingOrder(19, 3211, "Spectres Cow", 1200));
+            ItemList.Add(new BuyingOrder(20, 3065, "Spirit Visage", 1600));
+            ItemList.Add(new BuyingOrder(21, 2138, "Elixir of Iron", 500));
         }
 
         private void SetListAD()
@@ -221,22 +277,43 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
             ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
             ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
-            ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
+            ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 1050));
             ItemList.Add(new BuyingOrder(7, (int) ItemId.Recurve_Bow, "弓", 700));
-            ItemList.Add(new BuyingOrder(8, 1416, "Bloodrazor", 625));
-            ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
+            ItemList.Add(new BuyingOrder(8, 1416, "Bloodrazor", 1600));
+            ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Speed, "Boots of Speed", 1500));
             ItemList.Add(new BuyingOrder(10, 3117, "BoM", 600));
             ItemList.Add(new BuyingOrder(11, (int) ItemId.Tiamat_Melee_Only, "Tiamat", 1250));
-            ItemList.Add(new BuyingOrder(12, (int) ItemId.Vampiric_Scepter, "Vampiric_Screpter", 900));
-            ItemList.Add(new BuyingOrder(13, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 1450));
-            ItemList.Add(new BuyingOrder(14, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
-            ItemList.Add(new BuyingOrder(15, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
-            ItemList.Add(new BuyingOrder(16, 1037, "十字", 875));
-            ItemList.Add(new BuyingOrder(17, 3133, "warhamm", 1100));
-            ItemList.Add(new BuyingOrder(18, 3812, "dance", 1525));
-            ItemList.Add(new BuyingOrder(19, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
-            ItemList.Add(new BuyingOrder(20, 3742, "Dead Mans Plate", 2600));
-            ItemList.Add(new BuyingOrder(21, 2410, "Elixir of Wrath", 500));
+            ItemList.Add(new BuyingOrder(12, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 2350));
+            ItemList.Add(new BuyingOrder(13, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
+            ItemList.Add(new BuyingOrder(14, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
+            ItemList.Add(new BuyingOrder(15, 1037, "十字", 875));
+            ItemList.Add(new BuyingOrder(16, 3133, "warhamm", 1100));
+            ItemList.Add(new BuyingOrder(17, 3812, "dance", 1525));
+            ItemList.Add(new BuyingOrder(18, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
+            ItemList.Add(new BuyingOrder(19, 3742, "Dead Mans Plate", 2600));
+            ItemList.Add(new BuyingOrder(20, 2410, "Elixir of Wrath", 500));
+        }
+
+        private void SetlistNu()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
+            ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
+            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 1600));
+            ItemList.Add(new BuyingOrder(9, 3158, "Ionian Boots of Lucidity", 600));
+            ItemList.Add(new BuyingOrder(10, 3024, "Glacial Shroud", 1000));
+            ItemList.Add(new BuyingOrder(11, 3110, "Frozen Heart", 2000));
+            ItemList.Add(new BuyingOrder(12, 1052, "宝典", 435));
+            ItemList.Add(new BuyingOrder(13, 3285, "Ludens Echo", 2765));
+            ItemList.Add(new BuyingOrder(14, 1026, "Blasting Wand", 850));
+            ItemList.Add(new BuyingOrder(15, 3135, "Void Staf", 1800));
+            ItemList.Add(new BuyingOrder(16, 1058, "Needlessly Large Rod", 1250));
+            ItemList.Add(new BuyingOrder(17, 3089, "Rabadons Deathcap", 2500));
+            ItemList.Add(new BuyingOrder(18, 2139, "Elixir of Sorcery", 500));
         }
 
         public static void UseItemsJungle()
@@ -329,6 +406,9 @@ namespace AutoJungle.Data
         APADT,
         VB,
         Manwang,
-        YI
+        YI,
+        Bro,
+        Nu,
+        UD
     }
 }

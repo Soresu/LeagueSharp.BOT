@@ -198,40 +198,46 @@
   <data name="supportedYi" xml:space="preserve">
     <value>易大師</value>
   </data>
+  <data name="supportedOlaf" xml:space="preserve">
+    <value>歐拉夫</value>
+  </data>
+  <data name="supportedNunu" xml:space="preserve">
+    <value>努努</value>
+  </data>
+  <data name="supportedUdyr" xml:space="preserve">
+    <value>烏迪爾</value>
+  </data>
   <data name="UseTrinket" xml:space="preserve">
     <value>使用飾品</value>
   </data>
   <data name="AutoJungleInfo2" xml:space="preserve">
     <value>Soresu原作 | LOVETAIWAN更新 v</value>
   </data>
-  <data name="AutoJungleInfo3" xml:space="preserve">
-    <value>合成血手/戰士後F5，挂機則會無法使用!</value>
-  </data>
-  <data name="AutoJungleInfoReload" xml:space="preserve">
-    <value>You have to reload the assembly (F5)!</value>
-  </data>
-  <data name="Language" xml:space="preserve">
-    <value>Language</value>
-  </data>
-  <data name="lsetting" xml:space="preserve">
-    <value>Language</value>
-  </data>
   <data name="HealthToPotion" xml:space="preserve">
     <value>血量%使用藥水</value>
   </data>
+  <data name="AutoJungleInfoReload" xml:space="preserve">
+    <value>你必須重新載入腳本 (F5)!</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language|語言</value>
+  </data>
+  <data name="lsetting" xml:space="preserve">
+    <value>Language|語言設置</value>
+  </data>
   <data name="sssettings" xml:space="preserve">
-    <value>Summoner Spells</value>
+    <value>召喚師技能</value>
   </data>
   <data name="UseBarrier" xml:space="preserve">
-    <value>Use Barrier</value>
+    <value>使用光盾</value>
   </data>
   <data name="UseHeal" xml:space="preserve">
-    <value>Use Heal</value>
+    <value>使用治癒</value>
   </data>
   <data name="UseIgnite" xml:space="preserve">
-    <value>Use Ignite</value>
+    <value>使用點燃</value>
   </data>
   <data name="UseIgniteOpt" xml:space="preserve">
-    <value>   Change focus if ignite kills</value>
+    <value>切換目標如果點燃可擊殺</value>
   </data>
-</root>
+  </root>
