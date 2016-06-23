@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LeagueSharp;
@@ -50,7 +50,32 @@ namespace AutoJungle.Data
                 case BuildType.UD:
                     SetlistUD();
                     break;
+                case BuildType.KOG:
+                    SetlistKOG();
+                    break;                    
             }
+        }
+
+        private void SetlistKOG()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Sabre", 700));
+            ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
+            ItemList.Add(new BuyingOrder(7, 1419, "Bloodrazor", 2125));
+            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "鞋", 300));
+            ItemList.Add(new BuyingOrder(9, 3006, "攻速鞋", 500));
+            ItemList.Add(new BuyingOrder(10, 1037, "十字", 875));
+            ItemList.Add(new BuyingOrder(11, 3124, "怒", 2725));
+            ItemList.Add(new BuyingOrder(12, 3086, "叉子", 1300));
+            ItemList.Add(new BuyingOrder(13, 3085, "hurrican", 1300));
+            ItemList.Add(new BuyingOrder(14, (int) ItemId.Bilgewater_Cutlass, "弯刀", 1650));
+            ItemList.Add(new BuyingOrder(15, (int) ItemId.Blade_of_the_Ruined_King, "破败", 1750));
+            ItemList.Add(new BuyingOrder(16, 3044, "Phage", 950));
+            ItemList.Add(new BuyingOrder(17, 3071, "tbc", 1950));
+            ItemList.Add(new BuyingOrder(18, 2140, "嗑药", 500));
         }
 
         private void SetlistManwang()
@@ -87,17 +112,13 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
             ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
             ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
-            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "鞋", 475));
-            ItemList.Add(new BuyingOrder(9, 3009, "BoS", 1150));
-            ItemList.Add(new BuyingOrder(10, 3057, "sheen", 1050));
-            ItemList.Add(new BuyingOrder(11, 3025, "ICE", 1650));
-            ItemList.Add(new BuyingOrder(10, 1026, "棒", 850));
-            ItemList.Add(new BuyingOrder(11, 3124, "怒", 2750));
-            ItemList.Add(new BuyingOrder(12, 1031, "Chain Vest", 800));
-            ItemList.Add(new BuyingOrder(13, 3742, "Dead Man's Plate", 1800));
-            ItemList.Add(new BuyingOrder(16, 3211, "Spectres Cow", 1200));
-            ItemList.Add(new BuyingOrder(17, 3065, "Spirit Visage", 1600));
-            ItemList.Add(new BuyingOrder(18, 2138, "嗑药", 500));
+            ItemList.Add(new BuyingOrder(8, 3009, "BoS", 900));
+            ItemList.Add(new BuyingOrder(9, 3025, "ICE", 2750));
+            ItemList.Add(new BuyingOrder(10, 3124, "怒", 3700));
+            ItemList.Add(new BuyingOrder(11, 3742, "Dead Man's Plate", 2600));
+            ItemList.Add(new BuyingOrder(12, 3211, "Spectres Cow", 1200));
+            ItemList.Add(new BuyingOrder(13, 3065, "Spirit Visage", 1600));
+            ItemList.Add(new BuyingOrder(14, 2138, "嗑药", 500));
         }
 
         private void SetListASMANA()
@@ -409,6 +430,7 @@ namespace AutoJungle.Data
         YI,
         Bro,
         Nu,
-        UD
+        UD,
+        KOG
     }
 }
