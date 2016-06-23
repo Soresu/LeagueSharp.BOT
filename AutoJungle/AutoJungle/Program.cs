@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -125,7 +125,7 @@ namespace AutoJungle
                     }
                     if (_GameInfo.GameState == State.FightIng)
                     {
-                        if (Champdata.E.IsReady() && Champdata.R.IsReady() &&
+                    	if (Champdata.E.IsReady() && Champdata.R.IsReady() &&
                             ((Champdata.Q.CanCast(target) && !eActive) || (target.IsValidTarget(350)) ||
                              ((_GameInfo.DamageCount >= 2 || _GameInfo.DamageTaken > player.Health * 0.2f) || !eActive)))
                         {
@@ -143,6 +143,20 @@ namespace AutoJungle
                         {
                             return;
                         }
+                    }
+                    break;
+
+                case "Udyr":
+                    var rActive2 = !player.HasBuff("UdyrPhoenixStance");
+                    if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
+                    {
+                        var targetMob = _GameInfo.Target;
+                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(230) &&
+                            (player.ManaPercent > 25 || player.Level == 1) && !rActive2)
+                        {
+                            Champdata.R.Cast();
+                        }
+                        return;
                     }
                     break;
             }
@@ -316,15 +330,15 @@ namespace AutoJungle
 
         private static void CastSpells()
         {
-            if (_GameInfo.GameState == State.LaneClear || _GameInfo.GameState == State.Objective ||
-                _GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.Retreat)
-            {
-                Champdata.UseSpellsDef();
-            }
-            if (_GameInfo.Target == null)
-            {
-                return;
-            }
+        	if (_GameInfo.GameState == State.LaneClear || _GameInfo.GameState == State.Objective ||
+        		_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.Retreat)
+        	{
+        		Champdata.UseSpellsDef();
+        	}
+        	if (_GameInfo.Target == null)
+        	{
+        		return;
+        	}
             switch (_GameInfo.GameState)
             {
                 case State.FightIng:
@@ -418,8 +432,8 @@ namespace AutoJungle
                 return false;
             }
 
-            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") ||
-                ObjectManager.Player.HasBuff("ElixirOfSorcery"))
+            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || 
+            	ObjectManager.Player.HasBuff("ElixirOfSorcery"))
             {
                 return false;
             }
@@ -1486,6 +1500,7 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedOlaf", resourceM.GetString("supportedOlaf")));
             menuChamps.AddItem(new MenuItem("supportedNunu", resourceM.GetString("supportedNunu")));
             menuChamps.AddItem(new MenuItem("supportedUdyr", resourceM.GetString("supportedUdyr")));
+            menuChamps.AddItem(new MenuItem("supportedKogMaw", resourceM.GetString("supportedKogMaw")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
@@ -1495,7 +1510,7 @@ namespace AutoJungle
                 new MenuItem("Language", resourceM.GetString("Language")).SetValue(new StringList(languages, 0)));
             menuLang.AddItem(
                 new MenuItem("AutoJungleInfoReload", resourceM.GetString("AutoJungleInfoReload")).SetFontStyle(
-                    FontStyle.Bold, SharpDX.Color.Red));
+                    FontStyle.Bold, SharpDX.Color.Pink));
             menu.AddSubMenu(menuLang);
             menu.AddItem(
                 new MenuItem(
