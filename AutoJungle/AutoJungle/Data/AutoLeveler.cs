@@ -1,4 +1,5 @@
-﻿using LeagueSharp.Common;
+﻿using LeagueSharp;
+using LeagueSharp.Common;
 
 namespace AutoJungle.Data
 {
@@ -9,6 +10,10 @@ namespace AutoJungle.Data
 
         public AutoLeveler(int[] tree)
         {
+            if (ObjectManager.Player.Level >= 18)
+            {
+                return;
+            }
             autoLevel = new AutoLevel(tree);
             AutoLevel.Enable();
         }

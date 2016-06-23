@@ -89,7 +89,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
             ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "鞋", 475));
             ItemList.Add(new BuyingOrder(9, 3009, "BoS", 1150));
-            ItemList.Add(new BuyingOrder(10, 3057, "sheen", 1050));    
+            ItemList.Add(new BuyingOrder(10, 3057, "sheen", 1050));
             ItemList.Add(new BuyingOrder(11, 3025, "ICE", 1650));
             ItemList.Add(new BuyingOrder(10, 1026, "棒", 850));
             ItemList.Add(new BuyingOrder(11, 3124, "怒", 2750));

@@ -124,7 +124,6 @@ namespace AutoJungle
                     }
                     if (_GameInfo.GameState == State.FightIng)
                     {
-                        if (Champdata.E.IsReady() &&
                             ((Champdata.Q.CanCast(target) && !eActive) || (target.IsValidTarget(350)) ||
                              ((_GameInfo.DamageCount >= 2 || _GameInfo.DamageTaken > player.Health * 0.2f) || !eActive)))
                         {
@@ -326,12 +325,10 @@ namespace AutoJungle
                 case State.Jungling:
                     _GameInfo.Champdata.JungleClear();
                     UsePotions();
-                    Champdata.UseSpellsDef();
                     break;
                 case State.LaneClear:
                     _GameInfo.Champdata.JungleClear();
                     UsePotions();
-                    Champdata.UseSpellsDef();
                     break;
                 case State.Objective:
                     if (_GameInfo.Target is Obj_AI_Hero)
@@ -342,10 +339,8 @@ namespace AutoJungle
                     {
                         _GameInfo.Champdata.JungleClear();
                     }
-                    Champdata.UseSpellsDef();
                     break;
                 case State.Retreat:
-                    Champdata.UseSpellsDef();
                     break;
                 default:
                     break;
@@ -412,7 +407,6 @@ namespace AutoJungle
                 return false;
             }
 
-            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || ObjectManager.Player.HasBuff("ElixirOfSorcery"))
             {
                 return false;
             }
@@ -483,7 +477,6 @@ namespace AutoJungle
                     .FirstOrDefault(
                         t =>
                             t.IsEnemy && !t.IsDead && t.Distance(player) < 2000 &&
-                            Helpers.getAllyMobs(t.Position, 1250).Count(m => m.UnderTurret(true)) > 0);
             switch (_GameInfo.GameState)
             {
                 case State.Objective:
@@ -544,7 +537,6 @@ namespace AutoJungle
                                 m =>
                                     (!m.UnderTurret(true) ||
                                      (enemyTurret != null &&
-                                      Helpers.getAllyMobs(enemyTurret.Position, 1250).Count(o => o.UnderTurret(true)) >
                                       0)))
                             .OrderByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
                             .ThenBy(m => m.Distance(player))
@@ -608,7 +600,6 @@ namespace AutoJungle
                     }
                 }
             }
-            if ((Jungle.SmiteReady() || (player.Level >= 14 && player.HealthPercent > 80)) && player.Level >= 9 &&
                 player.Distance(Camps.Dragon.Position) < GameInfo.ChampionRange)
             {
                 var drake = Helpers.GetNearest(player.Position, GameInfo.ChampionRange);
@@ -626,7 +617,6 @@ namespace AutoJungle
         {
             Obj_AI_Hero gankTarget = null;
             if (player.Level >= menu.Item("GankLevel").GetValue<Slider>().Value &&
-                ((player.Mana > _GameInfo.Champdata.R.ManaCost && player.MaxMana > 100) || player.MaxMana <= 100))
             {
                 var heroes =
                     HeroManager.Enemies.Where(
@@ -775,13 +765,6 @@ namespace AutoJungle
 
         private static bool CheckLaneClear(Vector3 pos)
         {
-            if (Debug)
-            {
-                Console.WriteLine(
-                    Helpers.getMobs(pos, GameInfo.ChampionRange).Count +
-                    _GameInfo.EnemyStructures.Count(p => p.Distance(pos) < GameInfo.ChampionRange));
-                Console.WriteLine(!_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600));
-            }
             return (Helpers.AlliesThere(pos) == 0 || Helpers.AlliesThere(pos) >= 2 ||
                     player.Distance(_GameInfo.SpawnPoint) < 6000 || player.Distance(_GameInfo.SpawnPointEnemy) < 6000 ||
                     player.Level >= 10) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
@@ -789,7 +772,6 @@ namespace AutoJungle
                    _GameInfo.EnemyStructures.Count(
                        p =>
                            p.Distance(pos) < GameInfo.ChampionRange &&
-                           Helpers.getAllyMobs(p, 1250).Count(m => m.UnderTurret(true)) > 0) > 0 &&
                    !_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600) && _GameInfo.SmiteableMob == null &&
                    _GameInfo.GameState != State.Retreat;
         }
@@ -1350,11 +1332,6 @@ namespace AutoJungle
             Jungle.setSmiteSlot();
             if (Jungle.smiteSlot == SpellSlot.Unknown)
             {
-                Console.WriteLine("Items: ");
-                foreach (var i in player.InventoryItems)
-                {
-                    Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
-                }
                 Game.PrintChat(resourceM.GetString("NoSmite"));
                 return;
             }
@@ -1482,7 +1459,6 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedVolibear", resourceM.GetString("supportedVolibear")));
             menuChamps.AddItem(new MenuItem("supportedTryndamere", resourceM.GetString("supportedTryndamere")));
             menuChamps.AddItem(new MenuItem("supportedOlaf", resourceM.GetString("supportedOlaf")));
-            menuChamps.AddItem(new MenuItem("supportedNunu", resourceM.GetString("supportedNunu")));            
             menuChamps.AddItem(new MenuItem("supportedUdyr", resourceM.GetString("supportedUdyr")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
