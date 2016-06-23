@@ -429,17 +429,13 @@ namespace AutoJungle
             {
                 return false;
             }
-            if (R.IsReady() && Hero.Distance(targetMob) < 230 && !Hero.HasBuff("UdyrPhoenixStance"))
+            if (R.IsReady() && Hero.Distance(targetMob) < 135 || targetMob.MaxHealth > 700)
             {
                 R.Cast();
             }
-            if (W.IsReady() && Hero.Distance(targetMob) < 400 && Hero.ManaPercent > 30 || Hero.HealthPercent < 75)
+            if (W.IsReady() && Hero.HealthPercent < 75)
             {
                 W.Cast();
-            }
-            if (E.IsReady() && Hero.Distance(targetMob) < 130 && Hero.ManaPercent > 60)
-            {
-                E.Cast();
             }
             ItemHandler.UseItemsJungle();
             if (Hero.IsWindingUp)
