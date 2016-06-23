@@ -195,7 +195,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(17, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 1450));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Zeal, "Zeal", 1200));
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Phantom_Dancer, "Phantom Dancer", 1350));
-            ItemList.Add(new BuyingOrder(14, 2410, "Elixir of Wrath", 500));
+            ItemList.Add(new BuyingOrder(14, 2140, "Elixir of Wrath", 500));
         }
 
         private void SetListAPADT()
@@ -219,7 +219,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(17, 3102, "Banshees Veil", 1250));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
-            ItemList.Add(new BuyingOrder(20, 2410, "Elixir of Wrath", 500));
+            ItemList.Add(new BuyingOrder(20, 2140, "Elixir of Wrath", 500));
             //add heal spell useage and keep buy Elixir of Wrath after full item
         }
 
@@ -291,7 +291,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(17, 3812, "dance", 1525));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
             ItemList.Add(new BuyingOrder(19, 3742, "Dead Mans Plate", 2600));
-            ItemList.Add(new BuyingOrder(20, 2410, "Elixir of Wrath", 500));
+            ItemList.Add(new BuyingOrder(20, 2140, "Elixir of Wrath", 500));
         }
 
         private void SetlistNu()
