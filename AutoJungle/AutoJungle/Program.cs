@@ -151,7 +151,7 @@ namespace AutoJungle
                     if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
                     {
                         var targetMob = _GameInfo.Target;
-                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(230) &&
+                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(135) &&
                             (player.ManaPercent > 25 || player.Level == 1) && !rActive2)
                         {
                             Champdata.R.Cast();
