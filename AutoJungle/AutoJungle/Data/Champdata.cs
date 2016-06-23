@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using AutoJungle.Data;
 using LeagueSharp;
@@ -241,6 +241,22 @@ namespace AutoJungle
                     Combo = UDCombo;
                     Console.WriteLine("Udyr loaded");
                     break;
+
+                case "KogMaw":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.KOG;
+
+                    Q = new Spell(SpellSlot.Q, 1175);
+                    W = new Spell(SpellSlot.W, 710);
+                    E = new Spell(SpellSlot.E, 1280);
+                    R = new Spell(SpellSlot.R, 1800);
+
+                    Autolvl = new AutoLeveler(new int[] { 1, 0, 2, 1, 1, 3, 0, 2, 1, 1, 3, 0, 0, 2, 2, 3, 0, 2 });
+
+                    JungleClear = KogJungleClear;
+                    Combo = KogCombo;
+                    Console.WriteLine("KogMaw loaded");
+                    break;
                 default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
@@ -291,6 +307,83 @@ namespace AutoJungle
             }
         }
 
+         private bool KogCombo()
+         {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            ItemHandler.UseItemsCombo(targetHero, true);
+            if (Q.IsReady() && targetHero.IsValidTarget(900) || Hero.ManaPercent > 50)
+            {
+                Q.CastIfHitchanceEquals(targetHero, HitChance.High);
+            }
+            if (W.IsReady() && targetHero.IsValidTarget(710))
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && targetHero.IsValidTarget(1000))
+            {
+                E.Cast(targetHero);
+            }
+            if (R.IsReady() && Hero.ManaPercent > 60 && !Hero.HasBuff("KogMawBioArcaneBarrage"))
+            {
+                R.CastIfHitchanceEquals(targetHero, HitChance.High);
+            }
+            OrbwalkingForBots.Orbwalk(targetHero);
+            return false;
+         }
+
+         private bool KogJungleClear()
+         {
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            if (Q.IsReady() && Hero.Distance(targetMob) < Q.Range &&
+                (Helpers.getMobs(Hero.Position, Q.Range).Count >= 1 || targetMob.MaxHealth > 125))
+            {
+                Q.Cast(targetMob);
+            }
+            if (W.IsReady() && (Helpers.getMobs(Hero.Position, Q.Range).Count >= 1 || targetMob.MaxHealth > 700))
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && Hero.Distance(targetMob) < E.Range &&
+                (Helpers.getMobs(Hero.Position, E.Range).Count >= 2 || targetMob.MaxHealth > 700))
+            {
+                E.Cast(targetMob);
+            }
+            if (R.IsReady() && Hero.ManaPercent > 70 &&
+                (Helpers.getMobs(Hero.Position, R.Range).Count >= 2 || targetMob.MaxHealth > 700))
+            {
+                R.Cast(targetMob);
+            }
+            ItemHandler.UseItemsJungle();
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
+         }
+
         private bool UDCombo()
         {
             var targetHero = Program._GameInfo.Target;
@@ -306,6 +399,7 @@ namespace AutoJungle
             {
                 return false;
             }
+            ItemHandler.UseItemsCombo(targetHero, true);
             if (E.IsReady() && targetHero.IsValidTarget(700))
             {
                 E.Cast();
@@ -335,12 +429,11 @@ namespace AutoJungle
             {
                 return false;
             }
-            if (R.IsReady() && Hero.Distance(targetMob) < R.Range && Hero.ManaPercent > 30 &&
-                (Helpers.getMobs(Hero.Position, R.Range).Count >= 2 || targetMob.MaxHealth > 700))
+            if (R.IsReady() && Hero.Distance(targetMob) < 230 && !Hero.HasBuff("UdyrPhoenixStance"))
             {
                 R.Cast();
             }
-            if (W.IsReady() && Hero.Distance(targetMob) < 400 && Hero.ManaPercent > 30 || Hero.HealthPercent < 50)
+            if (W.IsReady() && Hero.Distance(targetMob) < 400 && Hero.ManaPercent > 30 || Hero.HealthPercent < 75)
             {
                 W.Cast();
             }
@@ -378,6 +471,7 @@ namespace AutoJungle
                 Q.Cast();
             }
             */
+            ItemHandler.UseItemsCombo(targetHero, true);
             if (W.IsReady() && !Hero.HasBuff("AbsoluteZero"))
             {
                 W.Cast();
@@ -481,12 +575,10 @@ namespace AutoJungle
             ItemHandler.UseItemsJungle();
             if (E.IsReady() && Hero.Distance(targetMob) < 300 &&
                 (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
-            {
                 if (Hero.HealthPercent > 45)
                 {
                     E.Cast(targetMob);
                 }
-            }
             if (W.IsReady() && Hero.Distance(targetMob) < 300 &&
                 (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
             {
