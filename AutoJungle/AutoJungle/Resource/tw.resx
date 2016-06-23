@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -207,6 +207,9 @@
   <data name="supportedUdyr" xml:space="preserve">
     <value>烏迪爾</value>
   </data>
+  <data name="supportedKogMaw" xml:space="preserve">
+    <value>寇格魔</value>
+  </data>  
   <data name="UseTrinket" xml:space="preserve">
     <value>使用飾品</value>
   </data>
