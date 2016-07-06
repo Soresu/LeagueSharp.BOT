@@ -40,7 +40,7 @@ namespace AutoJungle.Data
 
         public static MonsterInfo BLUE_MID = new MonsterInfo
         {
-            ID = "blue_MID",
+            ID = "bteam_MID",
             Position = new Vector3(5294.531f, 5537.924f, 50.46155f),
             name = "noneuses",
             RespawnTime = 0
@@ -48,7 +48,7 @@ namespace AutoJungle.Data
 
         public static MonsterInfo PURPLE_MID = new MonsterInfo
         {
-            ID = "purple_MID",
+            ID = "pteam_MID",
             Position = new Vector3(9443.35f, 9339.06f, 53.30994f),
             name = "noneuses",
             RespawnTime = 0

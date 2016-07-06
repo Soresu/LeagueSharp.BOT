@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -57,6 +57,14 @@ namespace AutoJungle
             {
                 return;
             }
+
+            if (menu.Item("WaitAtLvlTWO", true).GetValue<bool>() && Jungle.smite != null &&
+                Jungle.smite.Instance.Ammo == 0 && player.Level == 2 && _GameInfo.GameState == State.Positioning &&
+                player.Distance(_GameInfo.MonsterList.First().Position) < 700)
+            {
+                _GameInfo.afk = 0;
+                return;
+            }
             //Checking Afk
             if (CheckAfk())
             {
@@ -78,12 +86,6 @@ namespace AutoJungle
                     Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
                 }*/
                 _GameInfo.Show();
-                /*
-                foreach (var v in _GameInfo.MonsterList)
-                {
-                    Console.WriteLine(
-                        v.name + ": " + v.IsAlive() + " Next: " + ((Environment.TickCount - v.TimeAtDead) / 1000));
-                }*/
             }
             //Shopping
             if (Shopping())
@@ -125,7 +127,7 @@ namespace AutoJungle
                     }
                     if (_GameInfo.GameState == State.FightIng)
                     {
-                    	if (Champdata.E.IsReady() && Champdata.R.IsReady() &&
+                        if (Champdata.E.IsReady() && Champdata.R.IsReady() &&
                             ((Champdata.Q.CanCast(target) && !eActive) || (target.IsValidTarget(350)) ||
                              ((_GameInfo.DamageCount >= 2 || _GameInfo.DamageTaken > player.Health * 0.2f) || !eActive)))
                         {
@@ -247,7 +249,6 @@ namespace AutoJungle
         {
             _GameInfo.GroupWithoutTarget = false;
             ResetDamageTakenTimer();
-            AutoLevel.Enable();
             _GameInfo.WaitOnFountain = WaitOnFountain();
             _GameInfo.ShouldRecall = ShouldRecall();
             _GameInfo.GameState = SetGameState();
@@ -258,10 +259,7 @@ namespace AutoJungle
             _GameInfo.AllyStructures = GetStructures(true, _GameInfo.SpawnPointEnemy);
             _GameInfo.EnemyStructures = GetStructures(false, _GameInfo.SpawnPoint);
             _GameInfo.ClosestWardPos = Helpers.GetClosestWard();
-            if (player.Level >= 18)
-            {
-                AutoLevel.Disable();
-            }
+            _GameInfo.Champdata.Autolvl.LevelSpells();
         }
 
         private static IEnumerable<Vector3> GetStructures(bool ally, Vector3 basePos)
@@ -310,7 +308,9 @@ namespace AutoJungle
             {
                 if (player.Distance(_GameInfo.SpawnPoint) > 6000)
                 {
-                    Console.WriteLine("recalling" + Environment.TickCount);
+                    Console.WriteLine(
+                        "recalling" + Environment.TickCount + player.InFountain() +
+                        (player.ServerPosition.Distance(_GameInfo.SpawnPoint) < 1000));
                     player.Spellbook.CastSpell(SpellSlot.Recall);
                 }
                 else
@@ -330,15 +330,15 @@ namespace AutoJungle
 
         private static void CastSpells()
         {
-        	if (_GameInfo.GameState == State.LaneClear || _GameInfo.GameState == State.Objective ||
-        		_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.Retreat)
-        	{
-        		Champdata.UseSpellsDef();
-        	}
-        	if (_GameInfo.Target == null)
-        	{
-        		return;
-        	}
+            if (_GameInfo.GameState == State.LaneClear || _GameInfo.GameState == State.Objective ||
+                _GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.Retreat)
+            {
+                Champdata.UseSpellsDef();
+            }
+            if (_GameInfo.Target == null)
+            {
+                return;
+            }
             switch (_GameInfo.GameState)
             {
                 case State.FightIng:
@@ -432,8 +432,8 @@ namespace AutoJungle
                 return false;
             }
 
-            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || 
-            	ObjectManager.Player.HasBuff("ElixirOfSorcery"))
+            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") ||
+                ObjectManager.Player.HasBuff("ElixirOfSorcery"))
             {
                 return false;
             }
@@ -504,7 +504,7 @@ namespace AutoJungle
                     .FirstOrDefault(
                         t =>
                             t.IsEnemy && !t.IsDead && t.Distance(player) < 2000 &&
-                            Helpers.getAllyMobs(t.Position, 1000).Count(m => m.UnderTurret(true)) > 0);
+                            Helpers.getAllyMobs(t.Position, 1000).Count(m => m.UnderTurret(true)) > 1);
             switch (_GameInfo.GameState)
             {
                 case State.Objective:
@@ -689,6 +689,10 @@ namespace AutoJungle
             }
             if (gankTarget != null)
             {
+                if (Debug)
+                {
+                    Console.WriteLine("Gankable: " + gankTarget.Name);
+                }
                 var gankPosition =
                     Helpers.GankPos.Where(p => p.Distance(gankTarget.Position) < 2000)
                         .OrderBy(p => player.Distance(gankTarget.Position))
@@ -803,7 +807,7 @@ namespace AutoJungle
                    _GameInfo.EnemyStructures.Count(
                        p =>
                            p.Distance(pos) < GameInfo.ChampionRange &&
-                           Helpers.getAllyMobs(p, 1000).Count(m => m.UnderTurret(true)) > 0) > 0 &&
+                           Helpers.getAllyMobs(p, 1000).Count(m => m.UnderTurret(true)) > 1) > 0 &&
                    !_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600) && _GameInfo.SmiteableMob == null &&
                    _GameInfo.GameState != State.Retreat;
         }
@@ -848,6 +852,10 @@ namespace AutoJungle
 
         private static bool CheckForGrouping()
         {
+            if (Debug)
+            {
+                Console.WriteLine("---------------" + _GameInfo.GameState + "---------------");
+            }
             //Checking grouping allies
             var ally =
                 HeroManager.Allies.FirstOrDefault(
@@ -859,10 +867,25 @@ namespace AutoJungle
                 _GameInfo.GroupWithoutTarget = true;
                 if (Debug)
                 {
-                    Console.WriteLine("CheckForGrouping() - Checking grouping allies");
+                    Console.WriteLine("True - CheckForGrouping() - Checking grouping allies");
+                    Console.WriteLine("\t" + ally.Name);
+                    Console.WriteLine("\t" + CheckForRetreat(null, ally.Position));
+                    Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(ally.Position)));
                 }
                 return true;
             }
+            if (Debug)
+            {
+                Console.WriteLine("False - CheckForGrouping() - Checking grouping allies");
+                Console.WriteLine("\t" + ally != null);
+                if (ally != null)
+                {
+                    Console.WriteLine("\t" + ally.Name);
+                    Console.WriteLine("\t" + CheckForRetreat(null, ally.Position));
+                    Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(ally.Position)));
+                }
+            }
+
             //Checknig base after recall
             if (player.Distance(_GameInfo.SpawnPoint) < 5000)
             {
@@ -876,11 +899,26 @@ namespace AutoJungle
                     _GameInfo.MoveTo = mob.Position;
                     if (Debug)
                     {
-                        Console.WriteLine("CheckForGrouping() - Checknig base after recall");
+                        Console.WriteLine("True - CheckForGrouping() - Checknig base after recall");
+                        Console.WriteLine("\t" + Helpers.getMobs(mob.Position, 300).Count);
+                        Console.WriteLine("\t" + CheckForRetreat(null, mob.Position));
+                        Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(mob.Position)));
                     }
                     return true;
                 }
+                if (Debug)
+                {
+                    Console.WriteLine("False - CheckForGrouping() - Checknig base after recall");
+                    Console.WriteLine("\t" + mob != null);
+                    if (mob != null)
+                    {
+                        Console.WriteLine("\t" + Helpers.getMobs(mob.Position, 300).Count);
+                        Console.WriteLine("\t" + CheckForRetreat(null, mob.Position));
+                        Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(mob.Position)));
+                    }
+                }
             }
+
             //Checknig enemy turrets
             foreach (var vector in
                 _GameInfo.EnemyStructures.Where(
@@ -903,9 +941,17 @@ namespace AutoJungle
                             _GameInfo.MoveTo = pos;
                             if (Debug)
                             {
-                                Console.WriteLine("CheckForGrouping() - Checknig enemy turrets 1");
+                                Console.WriteLine("True - CheckForGrouping() - Checknig enemy turrets 1");
+                                Console.WriteLine("\t" + CheckForRetreat(null, pos));
+                                Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(pos)));
                             }
                             return true;
+                        }
+                        if (Debug)
+                        {
+                            Console.WriteLine("False - CheckForGrouping() - Checknig enemy turrets 1");
+                            Console.WriteLine("\t" + CheckForRetreat(null, pos));
+                            Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(pos)));
                         }
                     }
                     else
@@ -915,9 +961,17 @@ namespace AutoJungle
                             _GameInfo.MoveTo = vector;
                             if (Debug)
                             {
-                                Console.WriteLine("CheckForGrouping() - Checknig enemy turrets 2");
+                                Console.WriteLine("True - CheckForGrouping() - Checknig enemy turrets 2");
+                                Console.WriteLine("\t" + CheckForRetreat(null, pos));
+                                Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(pos)));
                             }
                             return true;
+                        }
+                        if (Debug)
+                        {
+                            Console.WriteLine("False - CheckForGrouping() - Checknig enemy turrets 2");
+                            Console.WriteLine("\t" + CheckForRetreat(null, pos));
+                            Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(pos)));
                         }
                     }
                 }
@@ -943,9 +997,17 @@ namespace AutoJungle
                             _GameInfo.MoveTo = pos;
                             if (Debug)
                             {
-                                Console.WriteLine("CheckForGrouping() - Checknig ally turrets 1");
+                                Console.WriteLine("True - CheckForGrouping() - Checknig ally turrets 1");
+                                Console.WriteLine("\t" + CheckForRetreat(null, pos));
+                                Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(pos)));
                             }
                             return true;
+                        }
+                        if (Debug)
+                        {
+                            Console.WriteLine("False - CheckForGrouping() - Checknig ally turrets 1");
+                            Console.WriteLine("\t" + CheckForRetreat(null, pos));
+                            Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(pos)));
                         }
                     }
                     else
@@ -955,9 +1017,17 @@ namespace AutoJungle
                             _GameInfo.MoveTo = vector;
                             if (Debug)
                             {
-                                Console.WriteLine("CheckForGrouping() - Checknig ally turrets 2");
+                                Console.WriteLine("True - CheckForGrouping() - Checknig ally turrets 2");
+                                Console.WriteLine("\t" + CheckForRetreat(null, pos));
+                                Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(pos)));
                             }
                             return true;
+                        }
+                        if (Debug)
+                        {
+                            Console.WriteLine("False - CheckForGrouping() - Checknig ally turrets 2");
+                            Console.WriteLine("\t" + CheckForRetreat(null, pos));
+                            Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(pos)));
                         }
                     }
                 }
@@ -976,9 +1046,25 @@ namespace AutoJungle
                     _GameInfo.GroupWithoutTarget = true;
                     if (Debug)
                     {
-                        Console.WriteLine("CheckForGrouping() - follow minis");
+                        Console.WriteLine("True - CheckForGrouping() - follow minis");
+                        Console.WriteLine("\t" + CheckForRetreat(null, objAiBase.Position));
+                        Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(objAiBase.Position)));
+                        Console.WriteLine("\t" + objAiBase.CountAlliesInRange(GameInfo.ChampionRange));
+                        Console.WriteLine("\t" + Helpers.getMobs(objAiBase.Position, 1000).Count);
                     }
                     return true;
+                }
+                if (Debug)
+                {
+                    Console.WriteLine("False - CheckForGrouping() - follow minis");
+                    Console.WriteLine("\t" + objAiBase != null);
+                    if (objAiBase != null)
+                    {
+                        Console.WriteLine("\t" + CheckForRetreat(null, objAiBase.Position));
+                        Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(objAiBase.Position)));
+                        Console.WriteLine("\t" + objAiBase.CountAlliesInRange(GameInfo.ChampionRange));
+                        Console.WriteLine("\t" + Helpers.getMobs(objAiBase.Position, 1000).Count);
+                    }
                 }
             }
             //Checking free enemy minionwaves
@@ -1000,7 +1086,11 @@ namespace AutoJungle
                     _GameInfo.MoveTo = miniwave.Position.Extend(player.Position, 200);
                     if (Debug)
                     {
-                        Console.WriteLine("CheckForGrouping() - Checking free enemy minionwavess");
+                        Console.WriteLine("True - CheckForGrouping() - Checking free enemy minionwavess");
+                        Console.WriteLine("\t" + CheckForRetreat(null, miniwave.Position));
+                        Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(miniwave.Position)));
+                        Console.WriteLine("\t" + miniwave.CountAlliesInRange(GameInfo.ChampionRange));
+                        Console.WriteLine("\t" + Helpers.getMobs(miniwave.Position, 1000).Count);
                     }
                     return true;
                 }
@@ -1021,8 +1111,32 @@ namespace AutoJungle
                     !CheckForRetreat(null, miniwave.Position) && CheckLaneClear(miniwave.Position))
                 {
                     _GameInfo.MoveTo = miniwave.Position.Extend(player.Position, 200);
+                    if (Debug)
+                    {
+                        Console.WriteLine("True - CheckForGrouping() - Checking ally mobs, pushing");
+                        Console.WriteLine("\t" + CheckForRetreat(null, miniwave.Position));
+                        Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(miniwave.Position)));
+                        Console.WriteLine("\t" + miniwave.CountAlliesInRange(GameInfo.ChampionRange));
+                        Console.WriteLine("\t" + Helpers.getMobs(miniwave.Position, 1000).Count);
+                    }
                     return true;
                 }
+                if (Debug)
+                {
+                    Console.WriteLine("True - CheckForGrouping() - Checking ally mobs, pushing");
+                    Console.WriteLine("\t" + miniwave != null);
+                    if (miniwave != null)
+                    {
+                        Console.WriteLine("\t" + CheckForRetreat(null, miniwave.Position));
+                        Console.WriteLine("\t" + Helpers.CheckPath(player.GetPath(miniwave.Position)));
+                        Console.WriteLine("\t" + miniwave.CountAlliesInRange(GameInfo.ChampionRange));
+                        Console.WriteLine("\t" + Helpers.getMobs(miniwave.Position, 1000).Count);
+                    }
+                }
+            }
+            if (Debug)
+            {
+                Console.WriteLine("------------------------------");
             }
             return false;
         }
@@ -1448,7 +1562,7 @@ namespace AutoJungle
 
             Menu menuD = new Menu(resourceM.GetString("dsettings"), "dsettings");
             menuD.AddItem(new MenuItem("debug", resourceM.GetString("debug")))
-                .SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press))
+                .SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle))
                 .SetFontStyle(FontStyle.Bold, SharpDX.Color.Orange);
             menuD.AddItem(new MenuItem("State", resourceM.GetString("State"))).SetValue(false);
             menu.AddSubMenu(menuD);
@@ -1459,7 +1573,7 @@ namespace AutoJungle
                 new MenuItem("HealthToPotion", resourceM.GetString("HealthToPotion")).SetValue(new Slider(80, 0, 100)));
             menuJ.AddItem(new MenuItem("EnemyJungle", resourceM.GetString("EnemyJungle"))).SetValue(true);
             menuJ.AddItem(new MenuItem("UseTrinket", resourceM.GetString("UseTrinket"))).SetValue(true);
-
+            menuJ.AddItem(new MenuItem("WaitAtLvlTWO", resourceM.GetString("WaitAtLvlTWO"), true)).SetValue(false);
             Menu menuJspells = new Menu(resourceM.GetString("sssettings"), "jssettings");
             menuJspells.AddItem(
                 new MenuItem("UseBarrierJ", resourceM.GetString("UseBarrier")).SetValue(new Slider(0, -1, 100)));
