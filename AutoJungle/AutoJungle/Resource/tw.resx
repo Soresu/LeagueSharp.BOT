@@ -244,6 +244,6 @@
     <value>寇格魔</value>
   </data>
   <data name="WaitAtLvlTWO" xml:space="preserve">
-    <value>Wait for smite at level 2</value>
+    <value>等級2時等待重擊就緒</value>
   </data>
 </root>
