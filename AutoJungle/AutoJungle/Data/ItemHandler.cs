@@ -65,16 +65,16 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Sabre", 700));
             ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
             ItemList.Add(new BuyingOrder(7, 1419, "Bloodrazor", 2125));
-            ItemList.Add(new BuyingOrder(10, 3006, "攻速鞋", 1100));
-            ItemList.Add(new BuyingOrder(11, 1037, "十字", 875));
-            ItemList.Add(new BuyingOrder(12, 3124, "怒", 2725));
-            ItemList.Add(new BuyingOrder(13, 3086, "叉子", 1300));
-            ItemList.Add(new BuyingOrder(14, 3085, "hurrican", 1300));
-            ItemList.Add(new BuyingOrder(15, (int) ItemId.Bilgewater_Cutlass, "弯刀", 1650));
-            ItemList.Add(new BuyingOrder(16, (int) ItemId.Blade_of_the_Ruined_King, "破败", 1750));
-            ItemList.Add(new BuyingOrder(17, 3044, "Phage", 950));
-            ItemList.Add(new BuyingOrder(18, 3071, "tbc", 1950));
-            ItemList.Add(new BuyingOrder(19, 2140, "嗑药", 500));
+            ItemList.Add(new BuyingOrder(8, 3006, "攻速鞋", 1100));
+            ItemList.Add(new BuyingOrder(9, 1037, "十字", 875));
+            ItemList.Add(new BuyingOrder(10, 3124, "怒", 2725));
+            ItemList.Add(new BuyingOrder(11, 3086, "叉子", 1300));
+            ItemList.Add(new BuyingOrder(12, 3085, "hurrican", 1300));
+            ItemList.Add(new BuyingOrder(13, (int) ItemId.Bilgewater_Cutlass, "弯刀", 1650));
+            ItemList.Add(new BuyingOrder(14, (int) ItemId.Blade_of_the_Ruined_King, "破败", 1750));
+            ItemList.Add(new BuyingOrder(15, 3044, "Phage", 950));
+            ItemList.Add(new BuyingOrder(16, 3071, "tbc", 1950));
+            ItemList.Add(new BuyingOrder(17, 2140, "嗑药", 500));
         }
 
         private void SetlistManwang()
