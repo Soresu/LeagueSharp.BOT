@@ -244,6 +244,6 @@
     <value>深渊巨口</value>
   </data>
   <data name="WaitAtLvlTWO" xml:space="preserve">
-    <value>Wait for smite at level 2</value>
+    <value>等级2时等待惩戒就绪</value>
   </data>
 </root>
