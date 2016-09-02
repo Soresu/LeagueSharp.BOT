@@ -137,16 +137,42 @@ namespace AutoJungle
                     }
                     break;
 
+                case "Kayle":
+                    var rActive3 = player.HasBuff("JudicatorIntervention");
+                    if (_GameInfo.GameState == State.FightIng)
+                    {
+                        var targetHero = _GameInfo.Target;
+                        if (Champdata.R.IsReady() && targetHero.IsValidTarget(525) &&
+                            player.HealthPercent <= 25 && !rActive3)
+                        {
+                            Champdata.R.Cast();
+                        }
+                        return;
+                    }
+                    if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
+                    {
+                        var targetMob = _GameInfo.Target;
+                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(525) &&
+                            player.HealthPercent <= 25 && !rActive3)
+                        {
+                            Champdata.R.Cast();
+                        }
+                        return;
+                    }
+                    break;
+/*
                 case "Nunu":
                     var rActive = player.HasBuff("AbsoluteZero");
                     if (_GameInfo.GameState == State.FightIng)
                     {
-                        if (player.Spellbook.IsChanneling && (target.IsValidTarget(650)))
+                        var targetHero = _GameInfo.Target;
+                        if (player.Spellbook.IsChanneling && (targetHero.IsValidTarget(650)))
                         {
                             return;
                         }
                     }
                     break;
+*/
 
                 case "Udyr":
                     var rActive2 = !player.HasBuff("UdyrPhoenixStance");
@@ -1615,6 +1641,7 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedNunu", resourceM.GetString("supportedNunu")));
             menuChamps.AddItem(new MenuItem("supportedUdyr", resourceM.GetString("supportedUdyr")));
             menuChamps.AddItem(new MenuItem("supportedKogMaw", resourceM.GetString("supportedKogMaw")));
+            menuChamps.AddItem(new MenuItem("supportedKayle", resourceM.GetString("supportedKayle")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
