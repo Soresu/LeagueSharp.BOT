@@ -60,7 +60,7 @@ namespace AutoJungle
 
             if (menu.Item("WaitAtLvlTWO", true).GetValue<bool>() && Jungle.smite != null &&
                 Jungle.smite.Instance.Ammo == 0 && player.Level == 2 && _GameInfo.GameState == State.Positioning &&
-                player.Distance(_GameInfo.MonsterList.First().Position) < 700)
+                player.HealthPercent < 55 && player.Distance(_GameInfo.MonsterList.First().Position) < 700)
             {
                 _GameInfo.afk = 0;
                 return;
