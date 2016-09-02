@@ -52,8 +52,32 @@ namespace AutoJungle.Data
                     break;
                 case BuildType.KOG:
                     SetlistKOG();
-                    break;                    
+                    break;    
+                case BuildType.Kayle:
+                	SetlistKayle();
+                    break;
             }
+        }
+
+        private void SetlistKayle()
+        {
+            ItemList.Add(new BuyingOrder(1, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 3101, "Stinger", 1300));
+            ItemList.Add(new BuyingOrder(7, 3006, "BKG", 1100));
+            ItemList.Add(new BuyingOrder(8, 3115, "NsT", 1900));
+            ItemList.Add(new BuyingOrder(9, 1037, "十字", 875));
+            ItemList.Add(new BuyingOrder(10, 3124, "怒", 2725));
+            ItemList.Add(new BuyingOrder(11, 1419, "Bloodrazor", 1625));
+            ItemList.Add(new BuyingOrder(12, 3144, "Cutlass", 1500));
+            ItemList.Add(new BuyingOrder(12, 3153, "Blade_of_the_Ruined_King", 1900));
+            ItemList.Add(new BuyingOrder(13, (int) ItemId.Giants_Belt, "Giants Belt", 1435));
+            ItemList.Add(new BuyingOrder(14, 1052, "Blade_of_the_Ruined_King", 435));
+            ItemList.Add(new BuyingOrder(15, 3116, "RCS", 1765));
+            ItemList.Add(new BuyingOrder(18, 2139, "Elixir of Sorcery", 500));
         }
 
         private void SetlistKOG()
@@ -429,6 +453,7 @@ namespace AutoJungle.Data
         Bro,
         Nu,
         UD,
+        Kayle,
         KOG
     }
 }
