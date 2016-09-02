@@ -257,6 +257,22 @@ namespace AutoJungle
                     Combo = KogCombo;
                     Console.WriteLine("KogMaw loaded");
                     break;
+
+                case "Kayle":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.Kayle;
+
+                    Q = new Spell(SpellSlot.Q, 650);
+                    W = new Spell(SpellSlot.W, 900);
+                    E = new Spell(SpellSlot.E, 525);
+                    R = new Spell(SpellSlot.R, 900);
+
+                    Autolvl = new AutoLeveler(new int[] { 2, 0, 1, 2, 2, 3, 2, 0, 2, 0, 3, 0, 0, 1, 1, 3, 1, 1 });
+
+                    JungleClear = KayleJungleClear;
+                    Combo = KayleCombo;
+                    Console.WriteLine("Kayle loaded");
+                    break;
                 default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
@@ -306,6 +322,72 @@ namespace AutoJungle
                 GameInfo.CastSpell(Program._GameInfo.Barrier);
             }
         }
+
+         private bool KayleCombo()
+         {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            ItemHandler.UseItemsCombo(targetHero, true);
+            if (Q.IsReady() && targetHero.IsValidTarget(650) || Hero.ManaPercent > 50)
+            {
+                Q.Cast(targetHero);
+            }
+            if (E.IsReady() && targetHero.IsValidTarget(525))
+            {
+                E.Cast();
+            }
+            if (W.IsReady() && Hero.HealthPercent < 50)
+            {
+                W.Cast();
+            }
+            OrbwalkingForBots.Orbwalk(targetHero);
+            return false;
+         }
+
+         private bool KayleJungleClear()
+         {
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            ItemHandler.UseItemsJungle();
+            if (Q.IsReady() && Q.CanCast(targetMob) && (Hero.ManaPercent > 45 || targetMob.MaxHealth > 700))
+            {
+                Q.CastOnUnit(targetMob);
+            }
+            if (E.IsReady() && targetMob.IsValidTarget(525))
+            {
+                E.Cast();
+            }
+            if (W.IsReady() && Hero.HealthPercent < 50)
+            {
+                W.Cast();
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
+         }
 
          private bool KogCombo()
          {
