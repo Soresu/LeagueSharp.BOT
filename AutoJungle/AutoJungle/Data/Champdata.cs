@@ -558,7 +558,7 @@ namespace AutoJungle
             {
                 E.CastOnUnit(targetHero);
             }
-            if (R.IsReady() && !Hero.HasBuff("AbsoluteZero") && targetHero.IsValidTarget(125))
+            if (R.IsReady() && !Hero.HasBuff("AbsoluteZero") && !targetHero.IsZombie && targetHero.IsValidTarget(125))
             {
                 R.Cast();
             }
