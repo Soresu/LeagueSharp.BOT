@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -12,6 +12,7 @@ using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
 using System.Resources;
+using System.Threading.Tasks;
 
 namespace AutoJungle
 {
@@ -142,8 +143,8 @@ namespace AutoJungle
                     if (_GameInfo.GameState == State.FightIng)
                     {
                         var targetHero = _GameInfo.Target;
-                        if (Champdata.R.IsReady() && targetHero.IsValidTarget(525) &&
-                            player.HealthPercent <= 25 && !rActive3)
+                        if (Champdata.R.IsReady() && targetHero.IsValidTarget(525) && player.HealthPercent <= 25 &&
+                            !rActive3)
                         {
                             Champdata.R.Cast();
                         }
@@ -152,27 +153,27 @@ namespace AutoJungle
                     if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
                     {
                         var targetMob = _GameInfo.Target;
-                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(525) &&
-                            player.HealthPercent <= 25 && !rActive3)
+                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(525) && player.HealthPercent <= 25 &&
+                            !rActive3)
                         {
                             Champdata.R.Cast();
                         }
                         return;
                     }
                     break;
-/*
-                case "Nunu":
-                    var rActive = player.HasBuff("AbsoluteZero");
-                    if (_GameInfo.GameState == State.FightIng)
-                    {
-                        var targetHero = _GameInfo.Target;
-                        if (player.Spellbook.IsChanneling && (targetHero.IsValidTarget(650)))
-                        {
-                            return;
-                        }
-                    }
-                    break;
-*/
+                /*
+                                case "Nunu":
+                                    var rActive = player.HasBuff("AbsoluteZero");
+                                    if (_GameInfo.GameState == State.FightIng)
+                                    {
+                                        var targetHero = _GameInfo.Target;
+                                        if (player.Spellbook.IsChanneling && (targetHero.IsValidTarget(650)))
+                                        {
+                                            return;
+                                        }
+                                    }
+                                    break;
+                */
 
                 case "Udyr":
                     var rActive2 = !player.HasBuff("UdyrPhoenixStance");
@@ -1577,13 +1578,13 @@ namespace AutoJungle
             if (menu.Item("AutoClose").GetValue<Boolean>())
             {
                 Console.WriteLine("END");
-                var delay = random.Next(25000, 35000);
+                var delay = Random.Next(25000, 35000);
                 Task.Run(
                     async () =>
-                        {
-                            await Task.Delay(delay);
-                            Game.Quit();
-                        });
+                    {
+                        await Task.Delay(delay);
+                        Game.Quit();
+                    });
             }
         }
 
