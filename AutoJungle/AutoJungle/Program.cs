@@ -1577,8 +1577,13 @@ namespace AutoJungle
             if (menu.Item("AutoClose").GetValue<Boolean>())
             {
                 Console.WriteLine("END");
-                Thread.Sleep(Random.Next(10000, 13000));
-                Game.Quit();
+                var delay = random.Next(25000, 35000);
+                Task.Run(
+                    async () =>
+                        {
+                            await Task.Delay(delay);
+                            Game.Quit();
+                        });
             }
         }
 
